@@ -1,6 +1,5 @@
 .env
 .coverage
-.coveragerc
 .vscode/
 __pycache__/
 irepo_env/
