@@ -1,245 +1,168 @@
-import unittest
-from app import app
-import json
+# import unittest
+# from app import app
+# import json
+# from database.users_db import UsersDB
+# from database.redflags_db import RedflagsDB
+
+# class TestMain(unittest.TestCase):
+
+#     def setUp(self):
+#         self.test_client = app.test_client()
+#         self.red_flag = {
+#                     "title":"Redflag",
+#                     "type":"Redflag",
+#                     "location":"7888876, 5667788",
+#                     "description":"description",
+#                     "comment":"comment"
+#                     }
+
+#         self.user = {
+#                     "firstname":"test",
+#                     "lastname":"test",
+#                     "username":"test",
+#                     "email":"t@t.cm",
+#                     "phonenumber":706084841,
+#                     "password":"test"
+#                 }
+
+#         response_red_flag = self.test_client.post(
+#             'ireporter/api/v2/red-flags',
+#             content_type='application/json',
+#             data=json.dumps(self.red_flag)
+#         )
+#         self.response_red_flag = json.loads(response_red_flag.data.decode())
+
+#         response_user = self.test_client.post(
+#             'ireporter/api/v2/users',
+#             content_type='application/json',
+#             data=json.dumps(self.user)
+#         )
+#         self.response_user = json.loads(response_user.data.decode())
+
+#     def tearDown(self):
+#         self.test_client.delete
+#         db = UsersDB()
+#         db.delete_user(self.response_user['data'][0]['id'])
+#         db = RedflagsDB()
+#         db.delete(self.response_red_flag['data'][0]['id'])
 
 
-class TestUsers(unittest.TestCase):
 
-    def setUp(self):
-        self.test_client = app.test_client()
-        self.test_client.get('/clearusers')
-        self.test_client.get('/clearflagss')
-        self.red_flag = {
-                    "title":"Redflag",
-                    "type":"Redflag",
-                    "location":"7888876, 5667788",
-                    "description":"description",
-                    "comment":"comment"
-                    }
+#     def test_create_red_flag(self):
+#         red_flag = {
+#                     "title":"test",
+#                     "type":"Redflag",
+#                     "location":"7888876, 5667788",
+#                     "description":"description",
+#                     "comment":"comment"
+#                     }
 
+#         response  = self.test_client.post(
+#             'ireporter/api/v2/red-flags',
+#             content_type='application/json',
+#             data=json.dumps(red_flag)
+#         )
+#         responsedata = json.loads(response.data.decode())
 
+#         self.assertEqual(response.status_code, 201)
+#         self.assertEqual(responsedata['data'][0]['message'], 'Created red-flag Record')
 
-    def test_user_register(self):
-        user = {
-                "firstname":"Joel",
-                "lastname":"Mugaya",
-                "username":"Josean",
-                "email":"joel@joel.com",
-                "phonenumber":256706084841,
-                "password":"mugayajoel"
-            }
+#         db = RedflagsDB()
+#         db.delete(responsedata['data'][0]['id'])
 
-        response  = self.test_client.post(
-            'ireporter/api/v2/users',
-            content_type='application/json',
-            data=json.dumps(user)
-        )
-        responsedata = json.loads(response.data.decode())
+#     def test_get_red_flags(self):
 
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(responsedata['data'][0]['message'], 'Created User record')
+#         response = self.test_client.get(
+#             'ireporter/api/v2/red-flags',
+#             content_type='application/json'
+#         )
+#         responsedata = json.loads(response.data.decode())
 
-    def test_wronguser_register(self):
-        user = {
-            "firstname":"",
-            "lastname":"",
-            "username":"",
-            "email":"",
-            "phonenumber":"",
-            "password":""
-        }
+#         self.assertEqual(response.status_code, 200)
+#         self.assertTrue('description' in str(responsedata))
 
-        response  = self.test_client.post(
-            'ireporter/api/v2/users',
-            content_type='application/json',
-            data=json.dumps(user)
-        )
-        responsedata = json.loads(response.data.decode())
+#     def test_post_duplicate_red_flags(self):
 
-        self.assertEqual(response.status_code, 400)
-        self.assertTrue('firstname can not be empty' in str(responsedata))
+#         self.test_client.post(
+#             'ireporter/api/v2/red-flags',
+#             content_type='application/json',
+#             data=json.dumps(self.red_flag)
+#         )
 
-    def test_getusers(self):
+#         response = self.test_client.post(
+#             'ireporter/api/v2/red-flags',
+#             content_type='application/json',
+#             data=json.dumps(self.red_flag)
+#         )
+#         responsedata = json.loads(response.data.decode())
 
-        user = {
-            "firstname":"Joel",
-            "lastname":"Mugaya",
-            "othernames":"Patrick",
-            "username":"Josean",
-            "email":"joel@joel.com",
-            "phonenumber":256706084841,
-            "password":"mugayajoel"
-        }
+#         self.assertEqual(response.status_code, 400)
+#         self.assertTrue('Incident already exists' in str(responsedata))
 
-        self.test_client.post(
-            'ireporter/api/v2/users',
-            content_type='application/json',
-            data=json.dumps(user)
-        )
+#     def test_get_red_flag(self):
 
-        response  = self.test_client.get(
-            'ireporter/api/v2/users',
-            content_type='application/json'
-        )
-        responsedata = json.loads(response.data.decode())
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('joel@joel.com' in str(responsedata))
+#         response  = self.test_client.get(
+#             f'ireporter/api/v2/red-flags/{self.response_red_flag["data"][0]["id"]}',
+#             content_type='application/json'
+#         )
+#         responsedata = json.loads(response.data.decode())
 
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(self.response_red_flag["data"][0]["id"], responsedata["data"]['flag_id'])
 
-    def test_create_red_flag(self):
+#     def test_delete_red_flag(self):
 
-        response  = self.test_client.post(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json',
-            data=json.dumps(self.red_flag)
-        )
-        responsedata = json.loads(response.data.decode())
+#         response = self.test_client.delete(
+#             f"ireporter/api/v2/red-flags/{self.response_red_flag['data'][0]['id']}",
+#             content_type='application/json'
+#         )
+#         responsedata = json.loads(response.data.decode())
 
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(responsedata['data'][0]['message'], 'Created red-flag Record')
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(responsedata["message"], 'Deleted red-flag Record')
 
-    def test_create_wrong_red_flag(self):
+#         response2 = self.test_client.get(
+#             f"ireporter/api/v2/red-flags/{self.response_red_flag['data'][0]['id']}",
+#             content_type='application/json'
+#         )
+#         responsedata = json.loads(response2.data.decode())
 
-        red_flag = {
-                "title":"Redflag",
-                "type":"Redflag",
-                "location":"7888876, 5667788",
-                "images":"/flag.png",
-                "videos":"/flag.mp4",
-                "description":""
-            }
+#         self.assertEqual(response2.status_code, 404)
+#         self.assertEqual(responsedata["error"], 'Redflag not found')
 
-        response  = self.test_client.post(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json',
-            data=json.dumps(red_flag)
-        )
-        responsedata = json.loads(response.data.decode())
+#     def test_put_redflag(self):
 
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(responsedata['error'], ['description can not be empty.'])
+#         red_flag2 = {
+#                     "title":"This is it",
+#                     "location":"123345, 98765",
+#                     "description":"desc"
+#                     }
 
-    def test_get_red_flags(self):
+#         response  = self.test_client.put(
+#             f'ireporter/api/v2/red-flags/{self.response_red_flag["data"][0]["id"]}',
+#             content_type='application/json',
+#             data=json.dumps(red_flag2)
+#         )
+#         respdata2 = json.loads(response.data.decode())
 
-        self.test_client.post(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json',
-            data=json.dumps(self.red_flag)
-        )
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(respdata2['message'], 'Updated red-flag Record')
 
-        response = self.test_client.get(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json'
-        )
-        responsedata = json.loads(response.data.decode())
+#     def test_put_red_flag_wrong(self):
 
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('description' in str(responsedata))
+#         red_flag2 = {
+#                     "title":"Redflag",
+#                     "location":"",
+#                     "description":"description",
+#                     "comment":"comment"
+#                     }
 
-    def test_post_duplicate_red_flags(self):
+#         response  = self.test_client.put(
+#             f'ireporter/api/v2/red-flags/{self.response_red_flag["data"][0]["id"]}',
+#             content_type='application/json',
+#             data=json.dumps(red_flag2)
+#         )
+#         respdata = json.loads(response.data.decode())
 
-        self.test_client.post(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json',
-            data=json.dumps(self.red_flag)
-        )
-
-        response = self.test_client.post(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json',
-            data=json.dumps(self.red_flag)
-        )
-        responsedata = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 400)
-        self.assertTrue('Incident already exists' in str(responsedata))
-
-    def test_get_red_flag(self):
-
-        resp = self.test_client.post(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json',
-            data=json.dumps(self.red_flag)
-        )
-        respdata = json.loads(resp.data.decode())
-
-        response  = self.test_client.get(
-            f'ireporter/api/v2/red-flags/{respdata["data"][0]["id"]}',
-            content_type='application/json'
-        )
-        responsedata = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(respdata["data"][0]["id"], responsedata["data"]['id'])
-
-    def test_delete_red_flag(self):
-
-        resp = self.test_client.post(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json',
-            data=json.dumps(self.red_flag)
-        )
-        respdata = json.loads(resp.data.decode())
-        refflag_id = respdata["data"][0]["id"]
-
-        response  = self.test_client.delete(
-            f'ireporter/api/v2/red-flags/{refflag_id}',
-            content_type='application/json'
-        )
-
-        response2  = self.test_client.get(
-            f'ireporter/api/v2/red-flags/{refflag_id}',
-            content_type='application/json'
-        )
-        responsedata = json.loads(response2.data.decode())
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(responsedata["error"], 'Redflag not found')
-
-    def test_get_wrong_red_flag(self):
-
-        response  = self.test_client.get(
-            'ireporter/api/v2/red-flags/1',
-            content_type='application/json'
-        )
-        responsedata = json.loads(response.data.decode())
-        
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(responsedata['error'], 'Redflag not found')
-
-    def test_put_redflag(self):
-
-        red_flag2 = {
-                    "title":"This is it",
-                    "location":"123345, 98765",
-                    "description":"desc"
-                    }
-
-        resp = self.test_client.post(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json',
-            data=json.dumps(self.red_flag)
-        )
-        respdata = json.loads(resp.data.decode())
-
-        response  = self.test_client.put(
-            f'ireporter/api/v2/red-flags/{respdata["data"][0]["id"]}',
-            content_type='application/json',
-            data=json.dumps(red_flag2)
-        )
-        respdata2 = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(respdata2['message'], 'Updated red-flag Record')
-
-    def test_put_wrong_red_flag(self):
-
-        response  = self.test_client.put(
-            'ireporter/api/v2/red-flags/1',
-            content_type='application/json'
-        )
-        respdata = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(respdata['error'], 'No data was posted')
+#         self.assertEqual(response.status_code, 400)
+#         self.assertTrue('location can not be empty.' in str(respdata['error']))
