@@ -6,21 +6,8 @@ from app import app
 from app.utils.utils import serialize, generate_id
 from app.utils.validate_user import Validate_user
 from app.models.user import User
+from database.users_db import UsersDB
 
-users = list()
-
-@app.route('/ireporter/api/v2/users', methods=["GET"])
-def getusers():
-
-    """ get users """
-    if request.method == 'GET':
-        if users:
-            allusers=serialize(users)
-            return jsonify({"status":200,
-                            "data":allusers
-                            }), 200
-
-        return jsonify({"status":404, "error":"No Users found"}), 404
 
 @app.route('/ireporter/api/v2/users', methods=["POST"])
 def postuser():
@@ -44,7 +31,12 @@ def postuser():
     if not thisuser['message'] == 'successfully validated':
         return jsonify({"status":400, "error":thisuser['message']}), 400
 
-    users.append(new_user)
+    userdb = UsersDB()
+    result = userdb.register_user(**user)
+
+    if result=='False':
+        print('*****'+str(result))
+        return jsonify({"status":400, "error":"User already exists"}), 400
 
     return jsonify({"status":201,
                     "data":[{
@@ -52,9 +44,35 @@ def postuser():
                         "message":"Created User record",
                     }]}), 201
 
-@app.route('/clearusers')
-def clearusers():
-    """ clear out data """
-    del users[:]
-    return 'True', 200
 
+@app.route('/ireporter/api/v2/login', methods=["POST"])
+def login():
+    """login"""
+    if request.is_json:
+        username = request.json.get('username')
+        password = request.json.get('password')
+
+        userdb = UsersDB()
+        credentials = userdb.login(username, password)
+        
+        if credentials != 'False':
+            return jsonify({'access_token':'access_token', 'status':200}), 200
+
+    return jsonify({"error": "Wrong username or password","status":401}), 401
+
+
+@app.route('/ireporter/api/v2/users', methods=["GET"])
+def getusers():
+
+    """ get users """
+    if request.method == 'GET':
+
+        userdb = UsersDB()
+        users = userdb.users()
+
+        if users and users != 'False':
+            return jsonify({"status":200,
+                            "data":users
+                            }), 200
+
+        return jsonify({"status":404, "error":"No Users found"}), 404
