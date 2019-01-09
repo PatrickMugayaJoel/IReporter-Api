@@ -2,6 +2,8 @@
 
 import datetime
 from flask import jsonify, request
+from flask_jwt import JWT, jwt_required, current_identity
+#from app.auth.auth import response_message, token_required, get_token
 from app import app
 from app.utils.utils import serialize, generate_id
 from app.utils.validate_user import Validate_user
@@ -55,8 +57,16 @@ def login():
         userdb = UsersDB()
         credentials = userdb.login(username, password)
         
-        if credentials != 'False':
+        if credentials and credentials != 'False':
             return jsonify({'access_token':'access_token', 'status':200}), 200
+
+        payload = {
+            'exp': datetime.datetime.utcnow() +
+                   datetime.timedelta(days=0, hours=23),
+            'user_id': credentials['userId'],
+            'is_admin': credentials['is_admin']
+        }
+        token = jwt.encode(payload, 'trulysKey', algorithm='HS256')
 
     return jsonify({"error": "Wrong username or password","status":401}), 401
 
@@ -76,3 +86,6 @@ def getusers():
                             }), 200
 
         return jsonify({"status":404, "error":"No Users found"}), 404
+
+
+
