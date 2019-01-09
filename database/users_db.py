@@ -21,7 +21,7 @@ class UsersDB:
                 );
             """
         )
-
+       
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS tokens (
@@ -99,8 +99,6 @@ class UsersDB:
     def delete_user(self, id):
         cursor.execute(f"delete FROM users where userId={id};")
 
-
-
     def save_token(self, token):
         query = f"INSERT INTO tokens(token) VALUES('{token}')"
         cursor.execute(query)
@@ -116,6 +114,6 @@ class UsersDB:
         results = cursor.fetchone()
         return results[0]
 
-
+      
 if __name__ == '__main__':
     db_name = UsersDB()

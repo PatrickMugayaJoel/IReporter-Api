@@ -87,5 +87,4 @@ def getusers():
 
         return jsonify({"status":404, "error":"No Users found"}), 404
 
-
-
+      
