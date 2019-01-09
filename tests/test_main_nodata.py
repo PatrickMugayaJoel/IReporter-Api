@@ -1,11 +1,13 @@
 import unittest
 from app import app
 import json
+from database.users_db import UsersDB
 
 class TestMainNoData(unittest.TestCase):
 
     def setUp(self):
         self.test_client = app.test_client()
+        UsersDB()
         self.red_flag = {
                     "title":"Redflag",
                     "type":"Redflag",
