@@ -26,10 +26,9 @@ class TestMainNoData(unittest.TestCase):
             content_type='application/json',
             data=json.dumps(self.red_flag)
         )
-        responsedata = json.loads(response.data.decode())
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(responsedata['error'], ['description can not be empty.'])
+        self.assertTrue(b'description can not be empty.' in response.data)
 
     def test_create_empty_red_flag(self):
 
@@ -38,9 +37,8 @@ class TestMainNoData(unittest.TestCase):
             content_type='application/json'
         )
 
-        responsedata = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(responsedata['error'], 'No data was posted')
+        self.assertTrue(b'No data was posted' in response.data)
 
     def test_get_red_flags(self):
 
@@ -49,9 +47,8 @@ class TestMainNoData(unittest.TestCase):
             content_type='application/json'
         )
 
-        responsedata = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(responsedata['error'], 'No redflags found')
+        self.assertTrue(b'No redflags found' in response.data)
 
     def test_get_red_flag(self):
 
@@ -60,9 +57,8 @@ class TestMainNoData(unittest.TestCase):
             content_type='application/json'
         )
 
-        responsedata = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(responsedata['error'], 'Redflag not found')
+        self.assertTrue(b'Redflag not found' in response.data)
 
     def test_delete_red_flag(self):
 
@@ -71,9 +67,8 @@ class TestMainNoData(unittest.TestCase):
             content_type='application/json'
         )
 
-        responsedata = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(responsedata['error'], 'Redflag not found')
+        self.assertTrue(b'Redflag not found' in response.data)
 
     def test_put_red_flag_wrong2(self):
 
@@ -82,7 +77,6 @@ class TestMainNoData(unittest.TestCase):
             content_type='application/json',
             data=json.dumps(self.red_flag)
         )
-        respdata = json.loads(response.data.decode())
 
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(respdata['error'], 'Redflag not found')
+        self.assertTrue(b'Redflag not found' in response.data)
