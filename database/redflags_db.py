@@ -13,7 +13,7 @@ class RedflagsDB:
                 status VARCHAR(20) NULL,
                 location VARCHAR(20) NOT NULL,
                 description TEXT NULL,
-                createdBy BIGINT NOT NULL REFERENCES users(userId),
+                createdby BIGINT NOT NULL REFERENCES users(userId),
                 createdOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """
@@ -29,9 +29,9 @@ class RedflagsDB:
     
     def register_flag(self, **kwags):
         reg_flag = f"""INSERT INTO\
-        redflags(flag_id, title, type, status, location, description, createdBy, createdOn)\
+        redflags(flag_id, title, type, status, location, description, createdby, createdOn)\
         VALUES('{kwags["id"]}', '{kwags["title"]}', '{kwags["type"]}', '{kwags["status"]}',\
-        '{kwags["location"]}', '{kwags["description"]}', '{kwags["createdBy"]}', '{kwags["createdOn"]}');"""
+        '{kwags["location"]}', '{kwags["description"]}', '{kwags["createdby"]}', '{kwags["createdOn"]}');"""
 
         print(reg_flag)
         try:
@@ -49,7 +49,17 @@ class RedflagsDB:
             return cursor.fetchone()
         except:
             return 'False'
-    
+
+    def check_flag_user(self, id):
+        query = f"SELECT * FROM redflags WHERE createdby='{id}';"
+        print(query)
+
+        try:
+            cursor.execute(query)
+            return cursor.fetchall()
+        except:
+            return 'False'
+
     def check_title(self, title):
         query = f"SELECT * FROM redflags WHERE title='{title}';"
         print(query)
