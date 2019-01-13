@@ -85,6 +85,25 @@ class UsersDB:
     def delete_user(self, id):
         cursor.execute(f"delete FROM users where userId={id};")
 
+    def delete_default_users(self):
+        cursor.execute(f"delete FROM users where userId<50;")
+
+    def default_users(self):
+        """insert a default user"""
+
+        try:
+            cursor.execute(
+                """
+                INSERT INTO users(userid, firstname, lastname, username, email, password, phonenumber, is_admin)\
+                VALUES(10, 'admin', 'admin', 'admin', 'admin@admin.go', 'admin', 123456, True ),\
+                (20, 'user', 'user', 'user', 'user@user.go', 'user', 123456, False );
+                """
+            )
+            return {"msg":"*** Created default user ***"}
+        
+        except Exception as ex:
+            return {"defusr":format(ex)}
+
       
 if __name__ == '__main__':
     db_name = UsersDB()

@@ -48,16 +48,26 @@ class TestUsersOne(unittest.TestCase):
         db = UsersDB()
         db.delete_user(responsedata['data'][0]['id'])
 
-    def test_getusers(self):
+    # def test_getusers(self):
+
+    #     response  = self.test_client.get(
+    #         'ireporter/api/v2/users',
+    #         content_type='application/json'
+    #     )
+
+    #     responsedata = json.loads(response.data.decode())
+    #     self.assertEqual(response.status_code, 404)
+    #     self.assertEqual(responsedata['error'], 'No Users found')
+    
+    def test_get_red_flags(self):
 
         response  = self.test_client.get(
-            'ireporter/api/v2/users',
+            'ireporter/api/v2/red-flags',
             content_type='application/json'
         )
 
-        responsedata = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(responsedata['error'], 'No Users found')
+        self.assertTrue(b'No redflags found' in response.data)
 
     def test_wronguser_register(self):
         user = {
