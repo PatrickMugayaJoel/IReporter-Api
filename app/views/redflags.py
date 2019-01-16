@@ -1,14 +1,15 @@
 
 import datetime
-from flask import jsonify, request
-from app import app
+from flask import jsonify, request, Blueprint
+from flask_jwt import JWT, jwt_required, current_identity
 from app.utils.utils import serialize, generate_id
 from app.utils.validate_redflag import Validate_redflag
 from app.models.redflag import Redflag
 from database.redflags_db import RedflagsDB
 
+redflags_view = Blueprint('redflags_view', __name__)
 
-@app.route('/ireporter/api/v2/red-flags', methods=["GET"])
+@redflags_view.route('/ireporter/api/v2/red-flags', methods=["GET"])
 def getredflags():
 
     """ get red-flags """
@@ -24,7 +25,8 @@ def getredflags():
         
         return jsonify({"status":"404", "error":"No redflags found"}), 404
 
-@app.route('/ireporter/api/v2/red-flags', methods=["POST"])
+@redflags_view.route('/ireporter/api/v2/red-flags', methods=["POST"])
+@jwt_required()
 def postredflag():
 
     """ add a red flag """
@@ -45,7 +47,7 @@ def postredflag():
     
     new_red_flag.id = generate_id()
     new_red_flag.createdOn = datetime.datetime.now().strftime("%Y/%m/%d")
-    new_red_flag.createdBy = 20190107093147712
+    new_red_flag.createdby = current_identity['userid']
     new_red_flag.status = 'under investigation'
 
     validate_redflag = Validate_redflag()
@@ -67,6 +69,19 @@ def postredflag():
         return jsonify({"status":400, "error":'Data not saved. sorry'}), 400
 
 
+@redflags_view.route('/ireporter/api/v2/red-flags/users/<int:id>', methods=["GET"])
+def getbyuser(id):
+
+    regflagdb = RedflagsDB()
+    regflags = regflagdb.check_flag_user(id)
+    
+    if regflags and regflags != 'False':
+        return jsonify({"status":200,
+                        "data":regflags
+                        }), 200
+
+    return jsonify({"status":404, "error":"No Redflags to display"}), 404
+
 
 def get_flag_by_id(id):
     """ get flag by id """
@@ -80,7 +95,7 @@ def get_flag_by_id(id):
         regflag = None
         return regflag
 
-@app.route('/ireporter/api/v2/red-flags/<int:id>', methods=["GET"])
+@redflags_view.route('/ireporter/api/v2/red-flags/<int:id>', methods=["GET"])
 def get(id):
 
     regflag = get_flag_by_id(id)
@@ -92,10 +107,17 @@ def get(id):
 
     return jsonify({"status":404, "error":"Redflag not found"}), 404
 
-@app.route('/ireporter/api/v2/red-flags/<int:id>', methods=["DELETE"])
+@redflags_view.route('/ireporter/api/v2/red-flags/<int:id>', methods=["DELETE"])
+@jwt_required()
 def delete(id):
 
     regflag = get_flag_by_id(id)
+
+    if not (current_identity['is_admin'] or (current_identity['userid'] == regflag['createdby']) ):
+        return jsonify({"status":401,
+                        "data":[{
+                            "message":"Sorry! you are not authorised to perform this action.",
+                        }]}), 401
 
     if regflag:
         regflagdb = RedflagsDB()
@@ -108,11 +130,19 @@ def delete(id):
 
     return jsonify({"status":404, "error":"Redflag not found"}), 404
 
-@app.route('/ireporter/api/v2/red-flags/<int:id>', methods=["PUT"])
+@redflags_view.route('/ireporter/api/v2/red-flags/<int:id>', methods=["PUT"])
+@jwt_required()
 def put(id):
 
     regflag = get_flag_by_id(id)
-        
+
+    print(regflag)
+    if not (current_identity['is_admin'] or (current_identity['userid'] == regflag['createdby']) ):
+        return jsonify({"status":401,
+                        "data":[{
+                            "message":"Sorry! you are not authorised to perform this action.",
+                        }]}), 401
+
     try: data = request.get_json()
     except: return jsonify({"status":400, "error":"No data was posted"}), 400
 
@@ -124,7 +154,7 @@ def put(id):
 
     regflag['id'] = regflag['flag_id']
     regflag['createdOn'] = str(regflag['createdon'])
-    regflag['createdBy'] = regflag['createdby']
+    regflag['createdby'] = regflag['createdby']
 
     validate_redflag = Validate_redflag()
     validited = validate_redflag.validate(**regflag)

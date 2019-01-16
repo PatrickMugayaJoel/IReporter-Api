@@ -8,7 +8,7 @@ class Validate_redflag(Validator):
             {'key':'location', 'type':'string', 'not_null':True},
             {'key':'description', 'type':'string', 'not_null':True},
             {'key':'createdOn', 'type':'string', 'not_null':True},
-            {'key':'createdBy', 'type':'integer', 'not_null':True},
+            {'key':'createdby', 'type':'integer', 'not_null':True},
             {'key':'title', 'type':'string', 'not_null':True},
             {'key':'status', 'type':'string', 'not_null':True},
             {'key':'id', 'type':'integer', 'not_null':True},

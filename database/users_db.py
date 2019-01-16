@@ -1,7 +1,6 @@
 
 from flask import jsonify
 from database.connection import cursor
-from werkzeug.security import generate_password_hash
 
 class UsersDB:
     def __init__(self):
@@ -9,7 +8,7 @@ class UsersDB:
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS users (
-                userId BIGINT NOT NULL PRIMARY KEY,
+                userid BIGINT NOT NULL PRIMARY KEY,
                 username VARCHAR(15) NOT NULL UNIQUE,
                 firstname VARCHAR(10) NULL,
                 lastname VARCHAR(10) NULL,
@@ -21,25 +20,14 @@ class UsersDB:
                 );
             """
         )
-       
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS tokens (
-            id SERIAL PRIMARY KEY,token TEXT,
-            is_valid BOOLEAN DEFAULT TRUE,
-            last_used TIMESTAMPTZ DEFAULT Now());
-            """
-        )
 
 
     def register_user(self, **kwags):
 
-        password = generate_password_hash(kwags["password"])
-
         reg_user = f"""INSERT INTO\
-        users(userId, firstname, lastname, username, email, password, phonenumber, registered)\
+        users(userid, firstname, lastname, username, email, password, phonenumber, registered)\
         VALUES('{kwags["id"]}', '{kwags["firstname"]}', '{kwags["lastname"]}', '{kwags["username"]}',\
-        '{kwags["email"]}', '{password}', '{kwags["phonenumber"]}', '{kwags["registered"]}');"""
+        '{kwags["email"]}', '{kwags["password"]}', '{kwags["phonenumber"]}', '{kwags["registered"]}');"""
 
         print(reg_user)
 
@@ -55,26 +43,16 @@ class UsersDB:
             return cursor.fetchall()
         except:
             return 'False'
-    
-    def check_username(self, username):
-        query = f"SELECT * FROM users WHERE username='{username}';"
-        print(query)
 
+    def update(self, **kwags):
+        query = f"""UPDATE users SET firstname='{kwags["firstname"]}', lastname='{kwags["lastname"]}', username='{kwags["username"]}', email='{kwags["email"]}', password='{kwags["password"]}', phonenumber='{kwags["phonenumber"]}', is_admin={kwags["is_admin"]} WHERE userid={kwags["id"]};"""
+
+        print(query)
         try:
             cursor.execute(query)
-            return cursor.fetchone()
+            return 'True'
         except:
-            return False
-
-    def check_email(self, email):
-        query = f"SELECT * FROM users WHERE email='{email}';"
-        print(query)
-
-        try:
-            cursor.execute(query)
-            return cursor.fetchone()
-        except:
-            return False
+            return 'False'
     
     def check_id(self, id):
         query = f"SELECT * FROM users WHERE userId='{id}';"
@@ -84,10 +62,9 @@ class UsersDB:
             cursor.execute(query)
             return cursor.fetchone()
         except:
-            return False
+            return 'False'
 
     def login(self, username, password):
-        password = generate_password_hash(password)
         query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}';"
         print(query)
         try:
@@ -99,20 +76,24 @@ class UsersDB:
     def delete_user(self, id):
         cursor.execute(f"delete FROM users where userId={id};")
 
-    def save_token(self, token):
-        query = f"INSERT INTO tokens(token) VALUES('{token}')"
-        cursor.execute(query)
+    def delete_default_users(self):
+        cursor.execute(f"delete FROM users where userId<50;")
 
-    def invalidate_a_token(self, token):
-        query = "UPDATE tokens SET is_valid  ={} WHERE token = '{}'".format(False, token)
-        cursor.execute(query)
+    def default_users(self):
+        """insert a default user"""
 
-    def is_token_invalid(self, token):
-        query = "SELECT is_valid FROM tokens WHERE token={}".format(token)
-        cursor.execute(query)
+        try:
+            cursor.execute(
+                """
+                INSERT INTO users(userid, firstname, lastname, username, email, password, phonenumber, is_admin)\
+                VALUES(10, 'admin', 'admin', 'admin', 'admin@admin.go', 'admin', 123456, True ),\
+                (20, 'user', 'user', 'user', 'user@user.go', 'user', 123456, False );
+                """
+            )
+            return {"msg":"*** Created default user ***"}
         
-        results = cursor.fetchone()
-        return results[0]
+        except Exception as ex:
+            return {"defusr":format(ex)}
 
       
 if __name__ == '__main__':

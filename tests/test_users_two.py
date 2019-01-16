@@ -24,6 +24,12 @@ class TestUsersTwo(unittest.TestCase):
         )
         self.responsedata = json.loads(response.data.decode())
 
+        response = self.test_client.post('/ireporter/api/v2/login', data=json.dumps({"username":"test", "password":"test"}), content_type='application/json')
+        data = json.loads(response.data)
+        token = data.get('access_token')
+        self.headers = {"Content-Type": "application/json", 'Authorization': f'Bearer {token}'}
+
+
     
     def tearDown(self):
         db = UsersDB()
