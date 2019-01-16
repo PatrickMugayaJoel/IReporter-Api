@@ -1,4 +1,3 @@
-""" routes file """
 
 import datetime
 from flask import jsonify, request, Blueprint
@@ -60,12 +59,10 @@ def getusers():
     userdb = UsersDB()
     users = userdb.users()
 
-    if users and users != 'False':
-        return jsonify({"status":200,
-                        "data":users
-                        }), 200
+    return jsonify({"status":200,
+                    "data":users
+                    }), 200
 
-    return jsonify({"status":404, "error":"No Users found"}), 404
   
 @users_view.route('/ireporter/api/v2/users/<int:id>', methods=["GET"])
 @jwt_required()

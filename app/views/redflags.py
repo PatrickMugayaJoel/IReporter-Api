@@ -1,15 +1,15 @@
 
 import datetime
-from flask import jsonify, request
-from app import app
+from flask import jsonify, request, Blueprint
 from flask_jwt import JWT, jwt_required, current_identity
 from app.utils.utils import serialize, generate_id
 from app.utils.validate_redflag import Validate_redflag
 from app.models.redflag import Redflag
 from database.redflags_db import RedflagsDB
 
+redflags_view = Blueprint('redflags_view', __name__)
 
-@app.route('/ireporter/api/v2/red-flags', methods=["GET"])
+@redflags_view.route('/ireporter/api/v2/red-flags', methods=["GET"])
 def getredflags():
 
     """ get red-flags """
@@ -25,7 +25,7 @@ def getredflags():
         
         return jsonify({"status":"404", "error":"No redflags found"}), 404
 
-@app.route('/ireporter/api/v2/red-flags', methods=["POST"])
+@redflags_view.route('/ireporter/api/v2/red-flags', methods=["POST"])
 @jwt_required()
 def postredflag():
 
@@ -69,7 +69,7 @@ def postredflag():
         return jsonify({"status":400, "error":'Data not saved. sorry'}), 400
 
 
-@app.route('/ireporter/api/v2/red-flags/users/<int:id>', methods=["GET"])
+@redflags_view.route('/ireporter/api/v2/red-flags/users/<int:id>', methods=["GET"])
 def getbyuser(id):
 
     regflagdb = RedflagsDB()
@@ -95,7 +95,7 @@ def get_flag_by_id(id):
         regflag = None
         return regflag
 
-@app.route('/ireporter/api/v2/red-flags/<int:id>', methods=["GET"])
+@redflags_view.route('/ireporter/api/v2/red-flags/<int:id>', methods=["GET"])
 def get(id):
 
     regflag = get_flag_by_id(id)
@@ -107,7 +107,7 @@ def get(id):
 
     return jsonify({"status":404, "error":"Redflag not found"}), 404
 
-@app.route('/ireporter/api/v2/red-flags/<int:id>', methods=["DELETE"])
+@redflags_view.route('/ireporter/api/v2/red-flags/<int:id>', methods=["DELETE"])
 @jwt_required()
 def delete(id):
 
@@ -130,7 +130,7 @@ def delete(id):
 
     return jsonify({"status":404, "error":"Redflag not found"}), 404
 
-@app.route('/ireporter/api/v2/red-flags/<int:id>', methods=["PUT"])
+@redflags_view.route('/ireporter/api/v2/red-flags/<int:id>', methods=["PUT"])
 @jwt_required()
 def put(id):
 

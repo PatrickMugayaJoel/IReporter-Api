@@ -20,15 +20,6 @@ class UsersDB:
                 );
             """
         )
-       
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS tokens (
-            id SERIAL PRIMARY KEY,token TEXT,
-            is_valid BOOLEAN DEFAULT TRUE,
-            last_used TIMESTAMPTZ DEFAULT Now());
-            """
-        )
 
 
     def register_user(self, **kwags):

@@ -6,6 +6,8 @@ from flask_jwt import JWT, jwt_required, current_identity
 from app.models.user import User
 from database.users_db import UsersDB
 from app.views.users import users_view
+from app.views.redflags import redflags_view
+from app.views.media import media
 
 
 db = UsersDB()
@@ -33,8 +35,10 @@ jwt = JWT(app, authenticate, identity)
 
 
 app.register_blueprint(users_view)
+app.register_blueprint(redflags_view)
+app.register_blueprint(media)
 
-from app.views import redflags, error_handlers
+from app.views import error_handlers
 
 #index route
 @app.route('/')

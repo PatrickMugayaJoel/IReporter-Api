@@ -48,17 +48,6 @@ class TestUsersOne(unittest.TestCase):
         db = UsersDB()
         db.delete_user(responsedata['data'][0]['id'])
 
-    # def test_getusers(self):
-
-    #     response  = self.test_client.get(
-    #         'ireporter/api/v2/users',
-    #         content_type='application/json'
-    #     )
-
-    #     responsedata = json.loads(response.data.decode())
-    #     self.assertEqual(response.status_code, 404)
-    #     self.assertEqual(responsedata['error'], 'No Users found')
-    
     def test_get_red_flags(self):
 
         response  = self.test_client.get(

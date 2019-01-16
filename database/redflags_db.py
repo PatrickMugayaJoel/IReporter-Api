@@ -90,7 +90,3 @@ class RedflagsDB:
             return 'True'
         except:
             return 'False'
-
-
-if __name__ == '__main__':
-    db_name = RedflagsDB()

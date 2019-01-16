@@ -88,3 +88,5 @@ class TestMainNoData(unittest.TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertTrue(b'Redflag not found' in response.data)
+
+

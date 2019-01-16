@@ -2,4 +2,4 @@
 .coverage
 .vscode/
 __pycache__/
-irepo_env/
+venv/
