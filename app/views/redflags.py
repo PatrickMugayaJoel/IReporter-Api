@@ -35,8 +35,10 @@ def postredflag():
     except:
         return jsonify({"status":400, "error":"No data was posted"}), 400
 
-    new_red_flag = Redflag(**data)
+    if not (data['type'] in ["redflag","intervention"]):
+        return jsonify({"status":400, "error":"Valid types are redflag and intervention."}), 400
 
+    new_red_flag = Redflag(**data)
 
     regflagdb = RedflagsDB()
     
@@ -69,7 +71,7 @@ def postredflag():
         return jsonify({"status":400, "error":'Data not saved. sorry'}), 400
 
 
-@redflags_view.route('/ireporter/api/v2/red-flags/users/<int:id>', methods=["GET"])
+@redflags_view.route('/ireporter/api/v2/users/<int:id>/red-flags', methods=["GET"])
 def getbyuser(id):
 
     regflagdb = RedflagsDB()

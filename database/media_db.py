@@ -1,5 +1,4 @@
 
-from flask import jsonify
 from database.connection import cursor
 
 class MediaDB:
@@ -21,34 +20,34 @@ class MediaDB:
     def add(self, **kwags):
 
         medium = f"""INSERT INTO media(type, resource, redflag)\
-        VALUES('{kwags["type"]}', '{kwags["input"]}', '{kwags["redflag"]}');"""
+        VALUES('{kwags["type"]}', '{kwags["input"]}', '{kwags["redflag"]}') RETURNING id;"""
 
         print(medium)
 
         try:
             cursor.execute(medium)
-            return jsonify({'status':True, 'data':cursor.fetchone()})
+            return {'status':True, 'data':cursor.fetchone()}
         except Exception as ex:
-            return jsonify({'status':False, 'message':format(ex)})
+            return {'status':False, 'message':format(ex)}
 
     def update(self, **kwags):
-        query = f"""UPDATE media SET resource='{kwags["input"]}' WHERE id={kwags["id"]};"""
+        query = f"""UPDATE media SET resource='{kwags["comment"]}' WHERE id={kwags["id"]} RETURNING id;"""
 
         print(query)
         try:
             cursor.execute(query)
-            return jsonify({'status':True, 'data':cursor.fetchone()})
+            return {'status':True, 'data':cursor.fetchone()}
         except Exception as ex:
-            return jsonify({'status':False, 'message':format(ex)})
+            return {'status':False, 'message':format(ex)}
 
     def flag_media(self, **kwags):
         query = f"""SELECT * FROM media WHERE type='{kwags["type"]}' AND redflag='{kwags["redflag"]}';"""
         print(query)
         try:
             cursor.execute(query)
-            return jsonify({'status':True, 'data':cursor.fetchall()})
+            return {'status':True, 'data':cursor.fetchall()}
         except Exception as ex:
-            return jsonify({'status':False, 'message':format(ex)})
+            return {'staus':False, 'message':format(ex)}
 
     def check_id(self, id):
         query = f"SELECT * FROM media WHERE id='{id}';"
@@ -56,13 +55,15 @@ class MediaDB:
 
         try:
             cursor.execute(query)
-            return jsonify({'status':True, 'data':cursor.fetchone()})
+            print("******** in query passed")
+            return {'status':True, 'data':cursor.fetchone()}
         except Exception as ex:
-            return jsonify({'status':False, 'message':format(ex)})
+            print("******** in query failed")
+            return {'status':False, 'message':format(ex)}
 
     def delete(self, id):
         try:
             cursor.execute(f"delete FROM media where id={id};")
-            return jsonify({'status':True, 'data':'medium successfully deleted'})
+            return {'status':True, 'data':'medium successfully deleted'}
         except Exception as ex:
-            return jsonify({'status':False, 'message':format(ex)})
+            return {'status':False, 'message':format(ex)}

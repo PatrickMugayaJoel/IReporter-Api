@@ -8,8 +8,8 @@ class RedflagsDB:
             """
             CREATE TABLE IF NOT EXISTS redflags (
                 flag_id BIGINT NOT NULL PRIMARY KEY,
-                title VARCHAR(20) NOT NULL UNIQUE,
-                type VARCHAR(8) NOT NULL,
+                title VARCHAR(30) NOT NULL UNIQUE,
+                type VARCHAR(12) NOT NULL,
                 status VARCHAR(20) NULL,
                 location VARCHAR(20) NOT NULL,
                 description TEXT NULL,

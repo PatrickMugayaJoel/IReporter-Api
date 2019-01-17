@@ -7,6 +7,8 @@ from app.utils.validate_user import Validate_user
 from app.models.user import User
 from database.users_db import UsersDB
 
+userdb = UsersDB()
+userdb.default_users()
 
 users_view = Blueprint('users_view', __name__)
 
@@ -32,7 +34,6 @@ def postuser():
     if not thisuser['message'] == 'successfully validated':
         return jsonify({"status":400, "error":thisuser['message']}), 400
 
-    userdb = UsersDB()
     result = userdb.register_user(**user)
 
     if result=='False':
@@ -56,7 +57,6 @@ def getusers():
                             "message":"Sorry! Access restricted to administrators.",
                         }]}), 401
 
-    userdb = UsersDB()
     users = userdb.users()
 
     return jsonify({"status":200,
@@ -74,7 +74,6 @@ def getauser(id):
                             "message":"Sorry! Access denied.",
                         }]}), 401
 
-    userdb = UsersDB()
     user = userdb.check_id(id)
 
     if user and user != 'False':
@@ -100,7 +99,6 @@ def updateuser(id):
     except:
         return jsonify({"status":400, "error":"No data posted"}), 400
 
-    userdb = UsersDB()
     user = userdb.check_id(id)
     if not user or user == 'False':
         return jsonify({"status":404, "error":"User not found"}), 404

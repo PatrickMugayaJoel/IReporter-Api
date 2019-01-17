@@ -33,12 +33,11 @@ def identity(payload):
 
 jwt = JWT(app, authenticate, identity)
 
+from app.views import error_handlers
 
 app.register_blueprint(users_view)
 app.register_blueprint(redflags_view)
 app.register_blueprint(media)
-
-from app.views import error_handlers
 
 #index route
 @app.route('/')

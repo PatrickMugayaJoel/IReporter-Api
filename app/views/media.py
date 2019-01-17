@@ -1,6 +1,7 @@
 
 from flask import jsonify, request, Blueprint
-from database.media import MediaDB
+from database.media_db import MediaDB
+from app.views.redflags import get_flag_by_id
 
 
 media = Blueprint('media_view', __name__)
@@ -16,16 +17,23 @@ def postmedia(id):
     except:
         return jsonify({"status":400, "error":"No data posted"}), 400
 
-    if not (data['type'] and isinstance(data['type'], str)):
+    if not (data.get('type') and isinstance(data.get('type'), str) and (not data['type'].isspace())):
         return jsonify({"status":400, "error":"type should be a string"}), 400
 
-    if not (data['input'] and isinstance(data['data'], str)):
+    if not (data['type'] in ["image","video","comment"]):
+        return jsonify({"status":400, "error":"Valid types are video, image, and comment."}), 400
+
+    if not (data.get('input') and isinstance(data.get('input'), str) and (not data['input'].isspace())):
         return jsonify({"status":400, "error":"Input should be a string"}), 400
+
+    if not get_flag_by_id(id):
+        return jsonify({"status":404, "error":f"Redflag with id '{id}' not found"}), 404
 
     data['redflag'] = id
 
     mediaDB = MediaDB()
     result = mediaDB.add(**data)
+    print(result)
 
     if not result['status']:
         print('***** in post '+str(result['message']))
@@ -33,27 +41,27 @@ def postmedia(id):
 
     return jsonify({"status":201,
                     "data":[{
-                        "id":result['id'],
-                        "message":f"{data['type']} successfuly added",
+                        "id":result['data']['id'],
+                        "message":f"{data['type']} successfully added",
                     }]}), 201
 
 
 @media.route('/ireporter/api/v2/red-flags/<int:id>/images', methods=["GET"])
 def getimages(id):
-    result = getmedia('image', id)
-    return result,result['status']
+    return getmedia('image', id)
 
 @media.route('/ireporter/api/v2/red-flags/<int:id>/videos', methods=["GET"])
 def getvideos(id):
-    result = getmedia('video', id)
-    return result,result['status']
+    return getmedia('video', id)
 
 @media.route('/ireporter/api/v2/red-flags/<int:id>/comments', methods=["GET"])
 def getcomments(id):
-    result = getmedia('comment', id)
-    return result,result['status']
+    return getmedia('comment', id)
 
 def getmedia(type, id):
+
+    if not get_flag_by_id(id):
+        return jsonify({"status":404, "error":f"Redflag with id '{id}' not found"}), 404
 
     mediaDB = MediaDB()
     result = mediaDB.flag_media(**{'type':type,'redflag':id})
@@ -88,19 +96,18 @@ def getmedia_by_id(id):
                     "data":result
                     }), 200
 
-@media.route('/ireporter/api/v2/red-flags/medium/<int:id>', methods=["PUT"])
-@media.route('/ireporter/api/v2/red-flags/images/<int:id>', methods=["PUT"])
-@media.route('/ireporter/api/v2/red-flags/videos/<int:id>', methods=["PUT"])
-@media.route('/ireporter/api/v2/red-flags/comments/<int:id>', methods=["PUT"])
-def update_medium(id):
+@media.route('/ireporter/api/v2/red-flags/<int:flag_id>/comments/<int:id>', methods=["PUT"])
+def update_comment(flag_id, id):
 
     try:
         data = request.get_json()
     except:
         return jsonify({"status":400, "error":"No data posted"}), 400
 
-    if not (data['input'] and isinstance(data['data'], str)):
-        return jsonify({"status":400, "error":"Input should be a string"}), 400
+    if not (data.get('comment') and isinstance(data.get('comment'), str) and (not data['comment'].isspace())):
+        return jsonify({"status":400, "error":"Comment should be a string"}), 400
+
+    data['id'] = id
 
     mediaDB = MediaDB()
     result = mediaDB.update(**data)
@@ -112,14 +119,13 @@ def update_medium(id):
         return jsonify({"status":200, "message":"Sorry, resource not found."}), 200
 
     return jsonify({"status":200,
-                    "data":{"id":result['id'], "message":"record update was successfull"}
+                    "data":{"id":result['data']['id'], "message":"record update was successfull"}
                     }), 200
 
-@media.route('/ireporter/api/v2/red-flags/medium/<int:id>', methods=["DELETE"])
-@media.route('/ireporter/api/v2/red-flags/images/<int:id>', methods=["DELETE"])
-@media.route('/ireporter/api/v2/red-flags/videos/<int:id>', methods=["DELETE"])
-@media.route('/ireporter/api/v2/red-flags/comments/<int:id>', methods=["DELETE"])
-def delete_media(id):
+@media.route('/ireporter/api/v2/red-flags/<int:flag_id>/images/<int:id>', methods=["DELETE"])
+@media.route('/ireporter/api/v2/red-flags/<int:flag_id>/videos/<int:id>', methods=["DELETE"])
+@media.route('/ireporter/api/v2/red-flags/<int:flag_id>/comments/<int:id>', methods=["DELETE"])
+def delete_media(flag_id, id):
 
     mediaDB = MediaDB()
     result = mediaDB.delete(id)

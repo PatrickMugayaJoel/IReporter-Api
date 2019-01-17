@@ -63,3 +63,16 @@ def page_not_found(e):
         'message': 'Please contact JoseanPatrick for details about this API.'
         }), 404
 
+@app.errorhandler(500)
+def server_error(e):
+    return jsonify ({
+        'Error': 'Server error. We apologise for the inconvenience.',
+        'message': 'Please try again or report the issue to the auther. Thank you.'
+        }), 400
+
+@app.errorhandler(405)
+def request_method_error(e):
+    return jsonify ({
+        'Error': 'Request method error.',
+        'message': 'You are trying to access a resource with a wrong request method.'
+        }), 405
