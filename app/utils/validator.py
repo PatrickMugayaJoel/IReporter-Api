@@ -59,7 +59,7 @@ class Validator:
         return item
 
     def __valid_string(self, mystring):
-        if not isinstance(mystring['value'], str):
+        if not isinstance(mystring['value'], str) or mystring['value'].isspace():
             self.__invalid_data_messages.append(mystring['key']+" must be a string.")
 
     def __is_valid_email(self, item):

@@ -1,6 +1,7 @@
 
 from flask import jsonify
 from app import app
+from flask import request
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -63,3 +64,9 @@ def page_not_found(e):
         'message': 'Please contact JoseanPatrick for details about this API.'
         }), 404
 
+@app.errorhandler(405)
+def request_method_error(e):
+    return jsonify ({
+        'Error': 'Request method error.',
+        'message': 'You are trying to access a resource with a wrong request method.'
+        }), 405

@@ -1,5 +1,6 @@
 
 import time
+from database.redflags_db import RedflagsDB
 
 
 def serialize(objt):
@@ -16,3 +17,14 @@ def generate_id():
    milliseconds = '%03d' % int((now - int(now)) * 1000)
    return int(time.strftime('%Y%m%d%H%M%S', localtime) + milliseconds)
 
+def get_flag_by_id(id):
+    """ get flag by id """
+
+    regflagdb = RedflagsDB()
+    regflag = regflagdb.check_flag(id)
+
+    if regflag and regflag != 'False':
+        return regflag
+    else:
+        regflag = None
+        return regflag

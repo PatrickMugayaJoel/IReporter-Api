@@ -8,13 +8,13 @@ class RedflagsDB:
             """
             CREATE TABLE IF NOT EXISTS redflags (
                 flag_id BIGINT NOT NULL PRIMARY KEY,
-                title VARCHAR(20) NOT NULL UNIQUE,
-                type VARCHAR(8) NOT NULL,
+                title VARCHAR(30) NOT NULL UNIQUE,
+                type VARCHAR(12) NOT NULL,
                 status VARCHAR(20) NULL,
                 location VARCHAR(20) NOT NULL,
                 description TEXT NULL,
-                createdBy BIGINT NOT NULL REFERENCES users(userId),
-                createdOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                createdby BIGINT NOT NULL REFERENCES users(userId),
+                createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """
         )
@@ -29,9 +29,9 @@ class RedflagsDB:
     
     def register_flag(self, **kwags):
         reg_flag = f"""INSERT INTO\
-        redflags(flag_id, title, type, status, location, description, createdBy, createdOn)\
+        redflags(flag_id, title, type, status, location, description, createdby, createdon)\
         VALUES('{kwags["id"]}', '{kwags["title"]}', '{kwags["type"]}', '{kwags["status"]}',\
-        '{kwags["location"]}', '{kwags["description"]}', '{kwags["createdBy"]}', '{kwags["createdOn"]}');"""
+        '{kwags["location"]}', '{kwags["description"]}', '{kwags["createdby"]}', '{kwags["createdon"]}');"""
 
         print(reg_flag)
         try:
@@ -49,7 +49,7 @@ class RedflagsDB:
             return cursor.fetchone()
         except:
             return 'False'
-    
+
     def check_title(self, title):
         query = f"SELECT * FROM redflags WHERE title='{title}';"
         print(query)
@@ -81,6 +81,17 @@ class RedflagsDB:
         except:
             return 'False'
 
+    def default_flag(self):
+        """insert a default flag"""
 
-if __name__ == '__main__':
-    db_name = RedflagsDB()
+        try:
+            cursor.execute(
+                """
+                INSERT INTO redflags(flag_id, title, type, status, location, description, createdby)\
+                VALUES(10, 'redflag', 'redflag', 'initial', '0.232, 3.211', 'description', 10);
+                """
+            )
+            return {"msg":"*** Created default flag ***"}
+        
+        except Exception as ex:
+            return {"defflag":format(ex)}

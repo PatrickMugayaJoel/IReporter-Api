@@ -1,5 +1,7 @@
 .env
+.testsenv
 .coverage
 .vscode/
 __pycache__/
-irepo_env/
+venv/
+.pytest_cache/
