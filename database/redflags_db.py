@@ -14,7 +14,7 @@ class RedflagsDB:
                 location VARCHAR(20) NOT NULL,
                 description TEXT NULL,
                 createdby BIGINT NOT NULL REFERENCES users(userId),
-                createdOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """
         )
@@ -29,9 +29,9 @@ class RedflagsDB:
     
     def register_flag(self, **kwags):
         reg_flag = f"""INSERT INTO\
-        redflags(flag_id, title, type, status, location, description, createdby, createdOn)\
+        redflags(flag_id, title, type, status, location, description, createdby, createdon)\
         VALUES('{kwags["id"]}', '{kwags["title"]}', '{kwags["type"]}', '{kwags["status"]}',\
-        '{kwags["location"]}', '{kwags["description"]}', '{kwags["createdby"]}', '{kwags["createdOn"]}');"""
+        '{kwags["location"]}', '{kwags["description"]}', '{kwags["createdby"]}', '{kwags["createdon"]}');"""
 
         print(reg_flag)
         try:
@@ -47,16 +47,6 @@ class RedflagsDB:
         try:
             cursor.execute(query)
             return cursor.fetchone()
-        except:
-            return 'False'
-
-    def check_flag_user(self, id):
-        query = f"SELECT * FROM redflags WHERE createdby='{id}';"
-        print(query)
-
-        try:
-            cursor.execute(query)
-            return cursor.fetchall()
         except:
             return 'False'
 
@@ -90,3 +80,18 @@ class RedflagsDB:
             return 'True'
         except:
             return 'False'
+
+    def default_flag(self):
+        """insert a default flag"""
+
+        try:
+            cursor.execute(
+                """
+                INSERT INTO redflags(flag_id, title, type, status, location, description, createdby)\
+                VALUES(10, 'redflag', 'redflag', 'initial', '0.232, 3.211', 'description', 10);
+                """
+            )
+            return {"msg":"*** Created default flag ***"}
+        
+        except Exception as ex:
+            return {"defflag":format(ex)}

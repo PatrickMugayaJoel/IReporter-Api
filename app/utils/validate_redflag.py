@@ -7,7 +7,7 @@ class Validate_redflag(Validator):
         schema = [
             {'key':'location', 'type':'string', 'not_null':True},
             {'key':'description', 'type':'string', 'not_null':True},
-            {'key':'createdOn', 'type':'string', 'not_null':True},
+            {'key':'createdon', 'type':'string', 'not_null':True},
             {'key':'createdby', 'type':'integer', 'not_null':True},
             {'key':'title', 'type':'string', 'not_null':True},
             {'key':'status', 'type':'string', 'not_null':True},

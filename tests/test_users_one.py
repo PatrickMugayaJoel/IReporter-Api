@@ -11,6 +11,8 @@ class TestUsersOne(unittest.TestCase):
     
     def tearDown(self):
         self.test_client.delete
+        db = UsersDB()
+        db.delete_default_users()
 
 
     def test_user_register_with_no_data(self):
@@ -45,8 +47,32 @@ class TestUsersOne(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(responsedata['data'][0]['message'], 'Created User record')
 
-        db = UsersDB()
-        db.delete_user(responsedata['data'][0]['id'])
+    def test_existing_user_register(self):
+
+        user = {
+                    "firstname":"test2",
+                    "lastname":"test2",
+                    "username":"test2",
+                    "email":"j@jj.cm",
+                    "phonenumber":706084841,
+                    "password":"test2"
+                }
+
+        self.test_client.post(
+            'ireporter/api/v2/users',
+            content_type='application/json',
+            data=json.dumps(user)
+        )
+
+        response  = self.test_client.post(
+            'ireporter/api/v2/users',
+            content_type='application/json',
+            data=json.dumps(user)
+        )
+        responsedata = json.loads(response.data.decode())
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(responsedata['error'], 'User already exists')
 
     def test_get_red_flags(self):
 
@@ -79,15 +105,6 @@ class TestUsersOne(unittest.TestCase):
         self.assertTrue('firstname can not be empty' in str(responsedata))
 
 
-
-    def test_home(self):
-
-        response  = self.test_client.get('/')
-        responsedata = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('welcome', str(responsedata))
-
     def test_errorpage(self):
 
         response  = self.test_client.get('/joel')
@@ -95,3 +112,4 @@ class TestUsersOne(unittest.TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertTrue('You have entered an unknown URL.', str(responsedata))
+

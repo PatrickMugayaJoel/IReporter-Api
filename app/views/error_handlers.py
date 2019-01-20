@@ -1,6 +1,7 @@
 
 from flask import jsonify
 from app import app
+from flask import request
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -62,13 +63,6 @@ def page_not_found(e):
         'Valid URLs': valid_urls,
         'message': 'Please contact JoseanPatrick for details about this API.'
         }), 404
-
-@app.errorhandler(500)
-def server_error(e):
-    return jsonify ({
-        'Error': 'Server error. We apologise for the inconvenience.',
-        'message': 'Please try again or report the issue to the auther. Thank you.'
-        }), 400
 
 @app.errorhandler(405)
 def request_method_error(e):

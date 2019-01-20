@@ -1,7 +1,8 @@
 
 from flask import jsonify, request, Blueprint
+from flask_jwt import jwt_required, current_identity
 from database.media_db import MediaDB
-from app.views.redflags import get_flag_by_id
+from app.utils.utils import get_flag_by_id
 
 
 media = Blueprint('media_view', __name__)
@@ -35,10 +36,6 @@ def postmedia(id):
     result = mediaDB.add(**data)
     print(result)
 
-    if not result['status']:
-        print('***** in post '+str(result['message']))
-        return jsonify({"status":400, "error":"Sorry resource not saved"}), 400
-
     return jsonify({"status":201,
                     "data":[{
                         "id":result['data']['id'],
@@ -46,58 +43,43 @@ def postmedia(id):
                     }]}), 201
 
 
-@media.route('/ireporter/api/v2/red-flags/<int:id>/images', methods=["GET"])
-def getimages(id):
-    return getmedia('image', id)
-
-@media.route('/ireporter/api/v2/red-flags/<int:id>/videos', methods=["GET"])
-def getvideos(id):
-    return getmedia('video', id)
-
-@media.route('/ireporter/api/v2/red-flags/<int:id>/comments', methods=["GET"])
-def getcomments(id):
-    return getmedia('comment', id)
-
+@media.route('/ireporter/api/v2/red-flags/<int:id>/<type>', methods=["GET"])
 def getmedia(type, id):
+
+    type = type.rstrip('s')
 
     if not get_flag_by_id(id):
         return jsonify({"status":404, "error":f"Redflag with id '{id}' not found"}), 404
 
     mediaDB = MediaDB()
     result = mediaDB.flag_media(**{'type':type,'redflag':id})
-    print(str(result))
+    print(type+'*****'+str(result))
     
-    if not result['status']:
-        print('***** in post '+str(result['message']))
-        return jsonify({"status":400, "error":"Sorry resource not saved"})
-    elif not result['data']:
+    if not result['data']:
         return jsonify({"status":200, "message":"No data to display."})
-
+    
     return jsonify({"status":200,
                     "data":result
                     }), 200
 
-@media.route('/ireporter/api/v2/red-flags/medium/<int:id>', methods=["GET"])
-@media.route('/ireporter/api/v2/red-flags/images/<int:id>', methods=["GET"])
-@media.route('/ireporter/api/v2/red-flags/videos/<int:id>', methods=["GET"])
-@media.route('/ireporter/api/v2/red-flags/comments/<int:id>', methods=["GET"])
+@media.route('/ireporter/api/v2/images/<int:id>', methods=["GET"])
+@media.route('/ireporter/api/v2/videos/<int:id>', methods=["GET"])
+@media.route('/ireporter/api/v2/comments/<int:id>', methods=["GET"])
 def getmedia_by_id(id):
 
     mediaDB = MediaDB()
     result = mediaDB.check_id(id)
 
-    if not result['status']:
-        print('***** in post '+str(result['message']))
-        return jsonify({"status":400, "error":"Sorry, request not successful try again"}), 400
-    elif not result['data']:
+    if not result.get('data'):
         return jsonify({"status":200, "message":"Sorry, resource not found."}), 200
 
     return jsonify({"status":200,
                     "data":result
                     }), 200
 
-@media.route('/ireporter/api/v2/red-flags/<int:flag_id>/comments/<int:id>', methods=["PUT"])
-def update_comment(flag_id, id):
+@media.route('/ireporter/api/v2/comments/<int:id>', methods=["PUT"])
+@jwt_required()
+def update_comment(id):
 
     try:
         data = request.get_json()
@@ -107,32 +89,53 @@ def update_comment(flag_id, id):
     if not (data.get('comment') and isinstance(data.get('comment'), str) and (not data['comment'].isspace())):
         return jsonify({"status":400, "error":"Comment should be a string"}), 400
 
+    mediaDB = MediaDB()
+    medium = mediaDB.check_id(id)
+
+    medium = medium.get('data')
+
+    if not medium:
+        return jsonify({"status":404, "error":f"Comment with id '{id}' not found"}), 404
+
+    regflag = get_flag_by_id(medium.get('redflag'))
+
+    if not (current_identity['is_admin'] or (current_identity['userid'] == regflag['createdby']) ):
+        return jsonify({"status":401,
+                        "data":[{
+                            "message":"Sorry! you are not authorised to perform this action.",
+                        }]}), 401
+
     data['id'] = id
 
-    mediaDB = MediaDB()
     result = mediaDB.update(**data)
-
-    if not result['status']:
-        print('***** in post '+str(result['message']))
-        return jsonify({"status":400, "error":"Sorry, request not successful try again"}), 400
-    elif not result['data']:
-        return jsonify({"status":200, "message":"Sorry, resource not found."}), 200
 
     return jsonify({"status":200,
                     "data":{"id":result['data']['id'], "message":"record update was successfull"}
                     }), 200
 
-@media.route('/ireporter/api/v2/red-flags/<int:flag_id>/images/<int:id>', methods=["DELETE"])
-@media.route('/ireporter/api/v2/red-flags/<int:flag_id>/videos/<int:id>', methods=["DELETE"])
-@media.route('/ireporter/api/v2/red-flags/<int:flag_id>/comments/<int:id>', methods=["DELETE"])
-def delete_media(flag_id, id):
+@media.route('/ireporter/api/v2/images/<int:id>', methods=["DELETE"])
+@media.route('/ireporter/api/v2/videos/<int:id>', methods=["DELETE"])
+@media.route('/ireporter/api/v2/comments/<int:id>', methods=["DELETE"])
+@jwt_required()
+def delete_media(id):
 
     mediaDB = MediaDB()
-    result = mediaDB.delete(id)
+    medium = mediaDB.check_id(id)
 
-    if not result['status']:
-        print('***** in post '+str(result['message']))
-        return jsonify({"status":400, "error":"Sorry, request not successful try again"}), 400
+    medium = medium.get('data')
+
+    if not medium:
+        return jsonify({"status":404, "error":"Item not found"}), 404
+
+    regflag = get_flag_by_id(medium.get('redflag'))
+
+    if not (current_identity['is_admin'] or (current_identity['userid'] == regflag['createdby']) ):
+        return jsonify({"status":401,
+                        "data":[{
+                            "message":"Sorry! you are not authorised to perform this action.",
+                        }]}), 401
+
+    mediaDB.delete(id)
 
     return jsonify({"status":200,
                     "data":{"id":id,"message":"Record successfully deleted"}

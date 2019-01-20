@@ -77,7 +77,9 @@ class UsersDB:
         cursor.execute(f"delete FROM users where userId={id};")
 
     def delete_default_users(self):
-        cursor.execute(f"delete FROM users where userId<50;")
+        cursor.execute("delete FROM media;")
+        cursor.execute("delete FROM redflags")
+        cursor.execute("delete FROM users;")
 
     def default_users(self):
         """insert a default user"""
@@ -94,7 +96,3 @@ class UsersDB:
         
         except Exception as ex:
             return {"defusr":format(ex)}
-
-      
-if __name__ == '__main__':
-    db_name = UsersDB()

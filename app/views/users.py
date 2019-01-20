@@ -69,10 +69,8 @@ def getusers():
 def getauser(id):
 
     if not (current_identity['is_admin'] or (current_identity['userid'] == id)):
-        return jsonify({"status":401,
-                        "data":[{
-                            "message":"Sorry! Access denied.",
-                        }]}), 401
+        return jsonify({"error":"Sorry! Access denied.",
+                        }), 401
 
     user = userdb.check_id(id)
 

@@ -14,7 +14,7 @@ class TestMainNoData(unittest.TestCase):
         self.db.default_users()
         self.red_flag = {
                     "title":"trest",
-                    "type":"Redflag",
+                    "type":"redflag",
                     "location":"7888876, 5667788",
                     "description":"",
                     "comment":"comment"
@@ -89,4 +89,22 @@ class TestMainNoData(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertTrue(b'Redflag not found' in response.data)
 
+    def test_create_empty_media(self):
 
+        response  = self.test_client.post(
+            'ireporter/api/v2/red-flags/1/comments',
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue(b'No data posted' in response.data)
+
+    def test_request_method_error(self):
+
+        response  = self.test_client.patch(
+            'ireporter/api/v2/images/1',
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 405)
+        self.assertTrue(b'Request method error.' in response.data)
