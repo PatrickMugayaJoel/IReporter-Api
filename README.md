@@ -36,16 +36,21 @@ Clone this github repository:  `$ https://github.com/PatrickMugayaJoel/Andela-35
 * Install requirements
 * Execute the 'run.py' file in the root directory.
 
-## Endpoints
+## Basic Endpoints
 
 | REQUEST | ROUTE | FUNCTIONALITY |
 | ------- | ----- | ------------- |
 | POST | /ireporter/api/v2/users | User Signup|
-| POST | /ireporter/api/v2/red-flags | Report a Red flag |
+| POST | /ireporter/api/v2/login | User login|
+| POST | /ireporter/api/v2/red-flags | Adding a Red_flag |
 | GET | /ireporter/api/v2/red-flags | list Red flag |
 | GET | /ireporter/api/v2/red-flags/1 | Get Red flag with id 1 |
-| PATCH | /ireporter/api/v2/red-flags/1 | Update a Red flag |
+| PUT | /ireporter/api/v2/red-flags/1 | Update a Red flag |
 | GET | /ireporter/api/v2/users | List Users |
+| POST | /ireporter/api/v2/red-flags/1/comments | Add a comment |
+| GET | /ireporter/api/v2/red-flags/1/comments | View comments |
+| UPDATE | /ireporter/api/v2/comments/1 | update a comment |
+| DELETE | /ireporter/api/v2/comments/1 | delete a comment |
 
 
 ## Authors
