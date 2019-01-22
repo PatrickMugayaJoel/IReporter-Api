@@ -1,5 +1,7 @@
 
 import time
+import jwt
+from datetime import timedelta, datetime
 from database.redflags_db import RedflagsDB
 
 
@@ -28,3 +30,14 @@ def get_flag_by_id(id):
     else:
         regflag = None
         return regflag
+
+def encode_handler(identity, JWT_SECRET_KEY, JWT_ALGORITHM):
+    payload = payload_handler(identity)
+    return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM, headers=None)
+
+def payload_handler(identity):
+    iat = datetime.utcnow()
+    exp = iat + timedelta(hours=10)
+    nbf = iat + timedelta(seconds=0)
+    identity = getattr(identity, 'id') or identity['id']
+    return {'exp': exp, 'iat': iat, 'nbf': nbf, 'identity': identity}

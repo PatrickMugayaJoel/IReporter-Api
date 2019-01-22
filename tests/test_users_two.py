@@ -11,9 +11,9 @@ class TestUsersTwo(unittest.TestCase):
         self.db = UsersDB()
         self.db.default_users()
 
-        response = self.test_client.post('/ireporter/api/v2/login', data=json.dumps({"username":"admin", "password":"admin"}), content_type='application/json')
+        response = self.test_client.post('/ireporter/api/v2/auth/login', data=json.dumps({"username":"admin", "password":"admin"}), content_type='application/json')
         data = json.loads(response.data)
-        token = data.get('access_token')
+        token = data['data'][0].get('token')
         self.headers = {"Content-Type": "application/json", 'Authorization': f'Bearer {token}'}
 
     

@@ -12,6 +12,7 @@ class UsersDB:
                 username VARCHAR(15) NOT NULL UNIQUE,
                 firstname VARCHAR(10) NULL,
                 lastname VARCHAR(10) NULL,
+                othernames VARCHAR(10) NULL,
                 email VARCHAR(20) NOT NULL UNIQUE,
                 password VARCHAR(100) NOT NULL,
                 is_admin BOOLEAN DEFAULT FALSE,

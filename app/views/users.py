@@ -2,7 +2,7 @@
 import datetime
 from flask import jsonify, request, Blueprint
 from flask_jwt import JWT, jwt_required, current_identity
-from app.utils.utils import serialize, generate_id
+from app.utils.utils import serialize, generate_id, encode_handler
 from app.utils.validate_user import Validate_user
 from app.models.user import User
 from database.users_db import UsersDB
@@ -12,7 +12,7 @@ userdb.default_users()
 
 users_view = Blueprint('users_view', __name__)
 
-@users_view.route('/ireporter/api/v2/users', methods=["POST"])
+@users_view.route('/ireporter/api/v2/auth/signup', methods=["POST"])
 def postuser():
 
     """ signup """
@@ -40,10 +40,12 @@ def postuser():
         print('***** in post '+str(result))
         return jsonify({"status":400, "error":"User already exists"}), 400
 
+
+
     return jsonify({"status":201,
                     "data":[{
-                        "id":new_user.id,
-                        "message":"Created User record",
+                        "token":encode_handler(new_user, str(new_user.id)+str(datetime.datetime.now()), "HS256").decode("utf-8"),
+                        "user":userdb.check_id(new_user.id),
                     }]}), 201
 
 

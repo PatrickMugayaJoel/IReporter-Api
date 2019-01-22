@@ -12,7 +12,7 @@ class RedflagsDB:
                 type VARCHAR(12) NOT NULL,
                 status VARCHAR(20) NULL,
                 location VARCHAR(20) NOT NULL,
-                description TEXT NULL,
+                comment TEXT NULL,
                 createdby BIGINT NOT NULL REFERENCES users(userId),
                 createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
@@ -20,18 +20,18 @@ class RedflagsDB:
         )
 
     
-    def regflags(self):
+    def regflags(self, type):
         try:
-            cursor.execute("SELECT * FROM redflags;")
+            cursor.execute(f"SELECT * FROM redflags WHERE type = {type};")
             return cursor.fetchall()
         except:
             return 'False'
     
     def register_flag(self, **kwags):
         reg_flag = f"""INSERT INTO\
-        redflags(flag_id, title, type, status, location, description, createdby, createdon)\
+        redflags(flag_id, title, type, status, location, comment, createdby, createdon)\
         VALUES('{kwags["id"]}', '{kwags["title"]}', '{kwags["type"]}', '{kwags["status"]}',\
-        '{kwags["location"]}', '{kwags["description"]}', '{kwags["createdby"]}', '{kwags["createdon"]}');"""
+        '{kwags["location"]}', '{kwags["comment"]}', '{kwags["createdby"]}', '{kwags["createdon"]}');"""
 
         print(reg_flag)
         try:
@@ -72,7 +72,7 @@ class RedflagsDB:
 
     
     def update(self, **kwags):
-        reg_flag = f"""UPDATE redflags SET title='{kwags["title"]}', type='{kwags["type"]}', status='{kwags["status"]}', location='{kwags["location"]}', description='{kwags["description"]}' WHERE flag_id={kwags["id"]};"""
+        reg_flag = f"""UPDATE redflags SET title='{kwags["title"]}', type='{kwags["type"]}', status='{kwags["status"]}', location='{kwags["location"]}', comment='{kwags["comment"]}' WHERE flag_id={kwags["id"]};"""
 
         print(reg_flag)
         try:
@@ -87,8 +87,8 @@ class RedflagsDB:
         try:
             cursor.execute(
                 """
-                INSERT INTO redflags(flag_id, title, type, status, location, description, createdby)\
-                VALUES(10, 'redflag', 'redflag', 'initial', '0.232, 3.211', 'description', 10);
+                INSERT INTO redflags(flag_id, title, type, status, location, comment, createdby)\
+                VALUES(10, 'redflag', 'redflag', 'initial', '0.232, 3.211', 'comment', 10);
                 """
             )
             return {"msg":"*** Created default flag ***"}
