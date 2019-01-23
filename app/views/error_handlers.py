@@ -5,6 +5,9 @@ from flask import request
 
 @app.errorhandler(404)
 def page_not_found(e):
+
+    """ function that handles 404 request errors """
+
     valid_urls = {
         'Welcome': {
             'url': '/',
@@ -66,6 +69,9 @@ def page_not_found(e):
 
 @app.errorhandler(405)
 def request_method_error(e):
+
+    """ function that is called when an endpoint is accessed with a wrong request method """
+
     return jsonify ({
         'Error': 'Request method error.',
         'message': 'You are trying to access a resource with a wrong request method.'

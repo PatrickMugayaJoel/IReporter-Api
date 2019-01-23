@@ -2,7 +2,7 @@
 import datetime
 from flask import jsonify, request, Blueprint
 from flask_jwt import JWT, jwt_required, current_identity
-from app.utils.utils import serialize, generate_id
+from app.utils.utils import serialize, generate_id, encode_handler
 from app.utils.validate_user import Validate_user
 from app.models.user import User
 from database.users_db import UsersDB
@@ -12,10 +12,10 @@ userdb.default_users()
 
 users_view = Blueprint('users_view', __name__)
 
-@users_view.route('/ireporter/api/v2/users', methods=["POST"])
+@users_view.route('/ireporter/api/v2/auth/signup', methods=["POST"])
 def postuser():
 
-    """ signup """
+    """ function to add a user """
     try:
         data = request.get_json()
     except:
@@ -40,16 +40,20 @@ def postuser():
         print('***** in post '+str(result))
         return jsonify({"status":400, "error":"User already exists"}), 400
 
+
+
     return jsonify({"status":201,
                     "data":[{
-                        "id":new_user.id,
-                        "message":"Created User record",
+                        "token":encode_handler(new_user, str(new_user.id)+str(datetime.datetime.now()), "HS256").decode("utf-8"),
+                        "user":userdb.check_id(new_user.id),
                     }]}), 201
 
 
 @users_view.route('/ireporter/api/v2/users', methods=["GET"])
 @jwt_required()
 def getusers():
+
+    """ function to get all users """
 
     if not current_identity['is_admin']:
         return jsonify({"status":401,
@@ -68,6 +72,8 @@ def getusers():
 @jwt_required()
 def getauser(id):
 
+    """ function to get a user by id """
+
     if not (current_identity['is_admin'] or (current_identity['userid'] == id)):
         return jsonify({"error":"Sorry! Access denied.",
                         }), 401
@@ -84,7 +90,7 @@ def getauser(id):
 @users_view.route('/ireporter/api/v2/users/<int:id>', methods=["PUT"])
 @jwt_required()
 def updateuser(id):
-    """ signup """
+    """ function to update user data """
 
     if not (current_identity['is_admin'] or (current_identity['userid'] == id)):
         return jsonify({"status":401,

@@ -18,7 +18,7 @@ class TestUsersOne(unittest.TestCase):
     def test_user_register_with_no_data(self):
 
         response  = self.test_client.post(
-            'ireporter/api/v2/users',
+            'ireporter/api/v2/auth/signup',
             content_type='application/json'
         )
 
@@ -38,14 +38,14 @@ class TestUsersOne(unittest.TestCase):
                 }
 
         response  = self.test_client.post(
-            'ireporter/api/v2/users',
+            'ireporter/api/v2/auth/signup',
             content_type='application/json',
             data=json.dumps(user)
         )
         responsedata = json.loads(response.data.decode())
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(responsedata['data'][0]['message'], 'Created User record')
+        self.assertEqual(responsedata['data'][0]['user']['firstname'], 'test2')
 
     def test_existing_user_register(self):
 
@@ -59,13 +59,13 @@ class TestUsersOne(unittest.TestCase):
                 }
 
         self.test_client.post(
-            'ireporter/api/v2/users',
+            'ireporter/api/v2/auth/signup',
             content_type='application/json',
             data=json.dumps(user)
         )
 
         response  = self.test_client.post(
-            'ireporter/api/v2/users',
+            'ireporter/api/v2/auth/signup',
             content_type='application/json',
             data=json.dumps(user)
         )
@@ -82,7 +82,7 @@ class TestUsersOne(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
-        self.assertTrue(b'No redflags found' in response.data)
+        self.assertTrue(b'No red-flags found' in response.data)
 
     def test_wronguser_register(self):
         user = {
@@ -95,7 +95,7 @@ class TestUsersOne(unittest.TestCase):
         }
 
         response  = self.test_client.post(
-            'ireporter/api/v2/users',
+            'ireporter/api/v2/auth/signup',
             content_type='application/json',
             data=json.dumps(user)
         )

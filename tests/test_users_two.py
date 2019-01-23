@@ -11,9 +11,9 @@ class TestUsersTwo(unittest.TestCase):
         self.db = UsersDB()
         self.db.default_users()
 
-        response = self.test_client.post('/ireporter/api/v2/login', data=json.dumps({"username":"admin", "password":"admin"}), content_type='application/json')
+        response = self.test_client.post('/ireporter/api/v2/auth/login', data=json.dumps({"username":"admin", "password":"admin"}), content_type='application/json')
         data = json.loads(response.data)
-        token = data.get('access_token')
+        token = data['data'][0].get('token')
         self.headers = {"Content-Type": "application/json", 'Authorization': f'Bearer {token}'}
 
     
@@ -34,8 +34,8 @@ class TestUsersTwo(unittest.TestCase):
 
     def test_get_users_unauthorized(self):
 
-        response = self.test_client.post('/ireporter/api/v2/login', data=json.dumps({"username":"user", "password":"user"}), content_type='application/json')
-        token = json.loads(response.data).get('access_token')
+        response = self.test_client.post('/ireporter/api/v2/auth/login', data=json.dumps({"username":"user", "password":"user"}), content_type='application/json')
+        token = json.loads(response.data).get('data')[0]['token']
 
         response  = self.test_client.get(
             'ireporter/api/v2/users',
@@ -59,8 +59,8 @@ class TestUsersTwo(unittest.TestCase):
 
     def test_get_a_user_unauthorized(self):
 
-        response = self.test_client.post('/ireporter/api/v2/login', data=json.dumps({"username":"user", "password":"user"}), content_type='application/json')
-        token = json.loads(response.data).get('access_token')
+        response = self.test_client.post('/ireporter/api/v2/auth/login', data=json.dumps({"username":"user", "password":"user"}), content_type='application/json')
+        token = json.loads(response.data).get('data')[0]['token']
 
         response  = self.test_client.get(
             'ireporter/api/v2/users/10',
@@ -125,8 +125,8 @@ class TestUsersTwo(unittest.TestCase):
                     "password":"joel"
                 }
 
-        response = self.test_client.post('/ireporter/api/v2/login', data=json.dumps({"username":"user", "password":"user"}), content_type='application/json')
-        token = json.loads(response.data).get('access_token')
+        response = self.test_client.post('/ireporter/api/v2/auth/login', data=json.dumps({"username":"user", "password":"user"}), content_type='application/json')
+        token = json.loads(response.data).get('data')[0]['token']
 
         response = self.test_client.put(
             f'ireporter/api/v2/users/10',

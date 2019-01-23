@@ -33,6 +33,7 @@ class Validator:
         }
 
         for item in self.__schema:
+            """ loop through a schemma assigning a function to do the actual check """
 
             item = self.__add_value_to_item(item)
             
@@ -59,6 +60,8 @@ class Validator:
         return item
 
     def __valid_string(self, mystring):
+        """ function that validates a string """
+
         if not isinstance(mystring['value'], str) or mystring['value'].isspace():
             self.__invalid_data_messages.append(mystring['key']+" must be a string.")
 

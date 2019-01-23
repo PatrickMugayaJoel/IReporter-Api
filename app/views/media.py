@@ -9,10 +9,9 @@ media = Blueprint('media_view', __name__)
 
 @media.route('/ireporter/api/v2/red-flags/<int:id>/images', methods=["POST"])
 @media.route('/ireporter/api/v2/red-flags/<int:id>/videos', methods=["POST"])
-@media.route('/ireporter/api/v2/red-flags/<int:id>/comments', methods=["POST"])
 def postmedia(id):
 
-    """ add media """
+    """ function that handles add media """
     try:
         data = request.get_json()
     except:
@@ -22,7 +21,7 @@ def postmedia(id):
         return jsonify({"status":400, "error":"type should be a string"}), 400
 
     if not (data['type'] in ["image","video","comment"]):
-        return jsonify({"status":400, "error":"Valid types are video, image, and comment."}), 400
+        return jsonify({"status":400, "error":"Valid types are video and image."}), 400
 
     if not (data.get('input') and isinstance(data.get('input'), str) and (not data['input'].isspace())):
         return jsonify({"status":400, "error":"Input should be a string"}), 400
@@ -46,6 +45,8 @@ def postmedia(id):
 @media.route('/ireporter/api/v2/red-flags/<int:id>/<type>', methods=["GET"])
 def getmedia(type, id):
 
+    """ funtion to return a list of media """
+
     type = type.rstrip('s')
 
     if not get_flag_by_id(id):
@@ -64,8 +65,9 @@ def getmedia(type, id):
 
 @media.route('/ireporter/api/v2/images/<int:id>', methods=["GET"])
 @media.route('/ireporter/api/v2/videos/<int:id>', methods=["GET"])
-@media.route('/ireporter/api/v2/comments/<int:id>', methods=["GET"])
 def getmedia_by_id(id):
+
+    """ function that returns a single image/video by id """
 
     mediaDB = MediaDB()
     result = mediaDB.check_id(id)
@@ -77,47 +79,12 @@ def getmedia_by_id(id):
                     "data":result
                     }), 200
 
-@media.route('/ireporter/api/v2/comments/<int:id>', methods=["PUT"])
-@jwt_required()
-def update_comment(id):
-
-    try:
-        data = request.get_json()
-    except:
-        return jsonify({"status":400, "error":"No data posted"}), 400
-
-    if not (data.get('comment') and isinstance(data.get('comment'), str) and (not data['comment'].isspace())):
-        return jsonify({"status":400, "error":"Comment should be a string"}), 400
-
-    mediaDB = MediaDB()
-    medium = mediaDB.check_id(id)
-
-    medium = medium.get('data')
-
-    if not medium:
-        return jsonify({"status":404, "error":f"Comment with id '{id}' not found"}), 404
-
-    regflag = get_flag_by_id(medium.get('redflag'))
-
-    if not (current_identity['is_admin'] or (current_identity['userid'] == regflag['createdby']) ):
-        return jsonify({"status":401,
-                        "data":[{
-                            "message":"Sorry! you are not authorised to perform this action.",
-                        }]}), 401
-
-    data['id'] = id
-
-    result = mediaDB.update(**data)
-
-    return jsonify({"status":200,
-                    "data":{"id":result['data']['id'], "message":"record update was successfull"}
-                    }), 200
-
 @media.route('/ireporter/api/v2/images/<int:id>', methods=["DELETE"])
 @media.route('/ireporter/api/v2/videos/<int:id>', methods=["DELETE"])
-@media.route('/ireporter/api/v2/comments/<int:id>', methods=["DELETE"])
 @jwt_required()
 def delete_media(id):
+
+    """ function to delete a video/image """
 
     mediaDB = MediaDB()
     medium = mediaDB.check_id(id)

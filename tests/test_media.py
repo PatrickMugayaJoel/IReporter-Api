@@ -15,9 +15,9 @@ class TestUsersTwo(unittest.TestCase):
         flags_db = RedflagsDB()
         flags_db.default_flag()
 
-        response = self.test_client.post('/ireporter/api/v2/login', data=json.dumps({"username":"admin", "password":"admin"}), content_type='application/json')
+        response = self.test_client.post('/ireporter/api/v2/auth/login', data=json.dumps({"username":"admin", "password":"admin"}), content_type='application/json')
         data = json.loads(response.data)
-        token = data.get('access_token')
+        token = data.get('data')[0]['token']
         self.headers = {"Content-Type": "application/json", 'Authorization': f'Bearer {token}'}
 
     
@@ -28,23 +28,23 @@ class TestUsersTwo(unittest.TestCase):
     def test_add_media(self):
 
         response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
+            'ireporter/api/v2/red-flags/10/images',
             content_type='application/json',
             headers=self.headers,
-            data=json.dumps({'type':'comment','input':'comment'})
+            data=json.dumps({'type':'image','input':'image'})
         )
         responsedata = json.loads(response.data.decode())
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(responsedata['data'][0]['message'], 'comment successfully added')
+        self.assertEqual(responsedata['data'][0]['message'], 'image successfully added')
 
     def test_empty_type_media(self):
 
         response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
+            'ireporter/api/v2/red-flags/10/images',
             content_type='application/json',
             headers=self.headers,
-            data=json.dumps({'type':'','input':'comment'})
+            data=json.dumps({'type':'','input':'image'})
         )
         responsedata = json.loads(response.data.decode())
 
@@ -54,23 +54,23 @@ class TestUsersTwo(unittest.TestCase):
     def test_wrong_type_media(self):
 
         response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
+            'ireporter/api/v2/red-flags/10/images',
             content_type='application/json',
             headers=self.headers,
-            data=json.dumps({'type':'joel','input':'comment'})
+            data=json.dumps({'type':'joel','input':'image'})
         )
         responsedata = json.loads(response.data.decode())
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(responsedata['error'], 'Valid types are video, image, and comment.')
+        self.assertEqual(responsedata['error'], 'Valid types are video and image.')
 
     def test_wrong_input_media(self):
 
         response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
+            'ireporter/api/v2/red-flags/10/images',
             content_type='application/json',
             headers=self.headers,
-            data=json.dumps({'type':'comment','input':3})
+            data=json.dumps({'type':'image','input':3})
         )
         responsedata = json.loads(response.data.decode())
 
@@ -80,10 +80,10 @@ class TestUsersTwo(unittest.TestCase):
     def test_no_flag_post_media(self):
 
         response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/1/comments',
+            'ireporter/api/v2/red-flags/1/images',
             content_type='application/json',
             headers=self.headers,
-            data=json.dumps({'type':'comment','input':'comment'})
+            data=json.dumps({'type':'image','input':'image'})
         )
         responsedata = json.loads(response.data.decode())
 
@@ -93,7 +93,7 @@ class TestUsersTwo(unittest.TestCase):
     def test_no_flag_get_media(self):
 
         response  = self.test_client.get(
-            'ireporter/api/v2/red-flags/1/comments',
+            'ireporter/api/v2/red-flags/1/images',
             content_type='application/json'
         )
         responsedata = json.loads(response.data.decode())
@@ -101,139 +101,55 @@ class TestUsersTwo(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(responsedata['error'], "Redflag with id '1' not found")
 
-    def test_get_comments(self):
+    def test_get_images(self):
 
         self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
+            'ireporter/api/v2/red-flags/10/images',
             content_type='application/json',
             headers=self.headers,
-            data=json.dumps({'type':'comment','input':'comment'})
+            data=json.dumps({'type':'image','input':'image'})
         )
 
         response = self.test_client.get(
-            'ireporter/api/v2/red-flags/10/comments',
+            'ireporter/api/v2/red-flags/10/images',
             content_type='application/json'
         )
         responsedata = json.loads(response.data.decode())
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('comment' in str(responsedata))
+        self.assertTrue('image' in str(responsedata))
 
-    def test_get_a_comment(self):
+    def test_get_a_image(self):
 
         resp = self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
+            'ireporter/api/v2/red-flags/10/images',
             content_type='application/json',
             headers=self.headers,
-            data=json.dumps({'type':'comment','input':'comment'})
+            data=json.dumps({'type':'image','input':'image'})
         )
         resp_data = json.loads(resp.data.decode())
 
         response = self.test_client.get(
-            f'ireporter/api/v2/comments/{resp_data["data"][0]["id"]}',
+            f'ireporter/api/v2/images/{resp_data["data"][0]["id"]}',
             content_type='application/json'
         )
         responsedata = json.loads(response.data.decode())
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('comment' in str(responsedata))
+        self.assertTrue('image' in str(responsedata))
 
-    def test_update_a_comment(self):
-
-        resp = self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
-            content_type='application/json',
-            headers=self.headers,
-            data=json.dumps({'type':'comment','input':'comment'})
-        )
-        resp_data = json.loads(resp.data.decode())
-
-        self.test_client.put(
-            f'ireporter/api/v2/comments/{resp_data["data"][0]["id"]}',
-            content_type='application/json',
-            headers=self.headers,
-            data=json.dumps({'comment':'this is joel'})
-        )
-
-        response = self.test_client.get(
-            f'ireporter/api/v2/comments/{resp_data["data"][0]["id"]}',
-            content_type='application/json'
-        )
-        responsedata = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('this is joel' in str(responsedata))
-
-    def test_update_unauthorized(self):
+    def test_delete_a_image(self):
 
         resp = self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
+            'ireporter/api/v2/red-flags/10/images',
             content_type='application/json',
             headers=self.headers,
-            data=json.dumps({'type':'comment','input':'comment'})
-        )
-        resp_data = json.loads(resp.data.decode())
-
-        response = self.test_client.post('/ireporter/api/v2/login', data=json.dumps({"username":"user", "password":"user"}), content_type='application/json')
-        token = json.loads(response.data).get('access_token')
-
-        response = self.test_client.put(
-            f'ireporter/api/v2/comments/{resp_data["data"][0]["id"]}',
-            headers={"Content-Type": "application/json", 'Authorization': f'Bearer {token}'},
-            data=json.dumps({'comment':'this is joel'})
-        )
-        responsedata = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 401)
-        self.assertTrue('Sorry! you are not authorised to perform this action.' in str(responsedata))
-
-    def test_update_wrong_comment_id(self):
-
-        response = self.test_client.put(
-            f'ireporter/api/v2/comments/0',
-            headers=self.headers,
-            data=json.dumps({'comment':'this is joel'})
-        )
-        responsedata = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 404)
-        self.assertTrue("Comment with id '0' not found" in str(responsedata))
-
-    def test_update_no_comment(self):
-
-        response = self.test_client.put(
-            f'ireporter/api/v2/comments/0',
-            headers=self.headers
-        )
-        responsedata = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 400)
-        self.assertTrue("No data posted" in str(responsedata))
-
-    def test_update_wrong_comment(self):
-
-        response = self.test_client.put(
-            f'ireporter/api/v2/comments/0',
-            headers=self.headers,
-            data=json.dumps({'comment':1})
-        )
-        responsedata = json.loads(response.data.decode())
-
-        self.assertEqual(response.status_code, 400)
-        self.assertTrue("Comment should be a string" in str(responsedata))
-
-    def test_delete_a_comment(self):
-
-        resp = self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
-            content_type='application/json',
-            headers=self.headers,
-            data=json.dumps({'type':'comment','input':'comment'})
+            data=json.dumps({'type':'image','input':'image'})
         )
         resp_data = json.loads(resp.data.decode())
 
         response = self.test_client.delete(
-            f'ireporter/api/v2/comments/{resp_data["data"][0]["id"]}',
+            f'ireporter/api/v2/images/{resp_data["data"][0]["id"]}',
             content_type='application/json',
             headers=self.headers
         )
@@ -242,21 +158,21 @@ class TestUsersTwo(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('Record successfully deleted' in str(responsedata))
 
-    def test_delete_comment_unauthorized(self):
+    def test_delete_image_unauthorized(self):
 
         resp = self.test_client.post(
-            'ireporter/api/v2/red-flags/10/comments',
+            'ireporter/api/v2/red-flags/10/images',
             content_type='application/json',
             headers=self.headers,
-            data=json.dumps({'type':'comment','input':'comment'})
+            data=json.dumps({'type':'image','input':'image'})
         )
         resp_data = json.loads(resp.data.decode())
 
-        response = self.test_client.post('/ireporter/api/v2/login', data=json.dumps({"username":"user", "password":"user"}), content_type='application/json')
-        token = json.loads(response.data).get('access_token')
+        response = self.test_client.post('/ireporter/api/v2/auth/login', data=json.dumps({"username":"user", "password":"user"}), content_type='application/json')
+        token = json.loads(response.data).get('data')[0]['token']
 
         response = self.test_client.delete(
-            f'ireporter/api/v2/comments/{resp_data["data"][0]["id"]}',
+            f'ireporter/api/v2/images/{resp_data["data"][0]["id"]}',
             headers={"Content-Type": "application/json", 'Authorization': f'Bearer {token}'}
         )
         responsedata = json.loads(response.data.decode())
@@ -264,10 +180,10 @@ class TestUsersTwo(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertTrue('Sorry! you are not authorised to perform this action.' in str(responsedata))
 
-    def test_delete_missing_comment(self):
+    def test_delete_missing_image(self):
 
         response = self.test_client.delete(
-            f'ireporter/api/v2/comments/0',
+            f'ireporter/api/v2/images/0',
             headers=self.headers
         )
         responsedata = json.loads(response.data.decode())
@@ -286,10 +202,10 @@ class TestUsersTwo(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('No data to display.' in str(responsedata))
 
-    def test_missing_comment(self):
+    def test_missing_image(self):
 
         response = self.test_client.get(
-            'ireporter/api/v2/comments/0',
+            'ireporter/api/v2/images/0',
             content_type='application/json'
         )
         responsedata = json.loads(response.data.decode())

@@ -12,6 +12,6 @@ class User:
         self.password = kwags.get('password')
         self.phonenumber = kwags.get('phonenumber')
         self.registered = kwags.get('registered')
-        self.isAdmin = kwags.get('isAdmin')
+        self.isAdmin = kwags.get('is_admin')
         self.id = kwags.get('id')
         self.othernames = kwags.get('othernames')
