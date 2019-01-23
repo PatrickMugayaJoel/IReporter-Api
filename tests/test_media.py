@@ -2,7 +2,7 @@ import unittest
 from app import app
 import json
 from database.users_db import UsersDB
-from database.redflags_db import RedflagsDB
+from database.incidents_db import IncidentsDB
 
 
 class TestUsersTwo(unittest.TestCase):
@@ -12,8 +12,8 @@ class TestUsersTwo(unittest.TestCase):
         self.db = UsersDB()
         self.db.default_users()
 
-        flags_db = RedflagsDB()
-        flags_db.default_flag()
+        incidents_db = IncidentsDB()
+        incidents_db.default_flag()
 
         response = self.test_client.post('/ireporter/api/v2/auth/login', data=json.dumps({"username":"admin", "password":"admin"}), content_type='application/json')
         data = json.loads(response.data)

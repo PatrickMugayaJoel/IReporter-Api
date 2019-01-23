@@ -3,7 +3,6 @@ import unittest
 from app import app
 import json
 from database.users_db import UsersDB
-from database.redflags_db import RedflagsDB
 
 class TestMainNoData(unittest.TestCase):
 

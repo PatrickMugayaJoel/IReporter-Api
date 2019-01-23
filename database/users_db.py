@@ -37,8 +37,6 @@ class UsersDB:
         VALUES('{kwags["id"]}', '{kwags["firstname"]}', '{kwags["lastname"]}', '{kwags["username"]}',\
         '{kwags["email"]}', '{kwags["password"]}', '{kwags["phonenumber"]}', '{kwags["registered"]}');"""
 
-        print(reg_user)
-
         try:
             cursor.execute(reg_user)
             return 'True'
@@ -61,7 +59,6 @@ class UsersDB:
 
         query = f"""UPDATE users SET firstname='{kwags["firstname"]}', lastname='{kwags["lastname"]}', username='{kwags["username"]}', email='{kwags["email"]}', password='{kwags["password"]}', phonenumber='{kwags["phonenumber"]}', is_admin={kwags["is_admin"]} WHERE userid={kwags["id"]};"""
 
-        print(query)
         try:
             cursor.execute(query)
             return 'True'
@@ -73,7 +70,6 @@ class UsersDB:
         """ function to select user from databse by id """
 
         query = f"SELECT * FROM users WHERE userId='{id}';"
-        print(query)
 
         try:
             cursor.execute(query)
@@ -86,7 +82,6 @@ class UsersDB:
         """ function to check if the provided username and pasword exist in the database """
 
         query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}';"
-        print(query)
         try:
             cursor.execute(query)
             return cursor.fetchone()
@@ -104,7 +99,7 @@ class UsersDB:
         """ function to clear all database tables (three tables) """
 
         cursor.execute("delete FROM media;")
-        cursor.execute("delete FROM redflags")
+        cursor.execute("delete FROM incidents")
         cursor.execute("delete FROM users;")
 
     def default_users(self):

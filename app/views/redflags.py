@@ -5,11 +5,11 @@ from flask_jwt import jwt_required, current_identity
 from app.utils.utils import serialize, generate_id, get_flag_by_id
 from app.utils.validate_redflag import Validate_redflag
 from app.models.redflag import Redflag
-from database.redflags_db import RedflagsDB
+from database.incidents_db import IncidentsDB
 from database.media_db import MediaDB
 
 redflags_view = Blueprint('redflags_view', __name__)
-regflagdb = RedflagsDB()
+incidents_db = IncidentsDB()
 mediaDB = MediaDB()
 
 @redflags_view.route('/ireporter/api/v2/<type>', methods=["GET"])
@@ -20,7 +20,7 @@ def getredflags(type):
     if not (type in ["red-flags","interventions"]):
         return jsonify({"status":"404", "error":"Invalid URL"}), 404
     
-    regflags = regflagdb.regflags(type.rstrip('s'))
+    regflags = incidents_db.regflags(type.rstrip('s'))
 
     if not (regflags and regflags != 'False'):
         return jsonify({"status":"404", "error":f"No {type} found"}), 404
@@ -50,7 +50,7 @@ def postredflag(type):
 
     new_red_flag = Redflag(**data)
     
-    title = regflagdb.check_title(new_red_flag.title)
+    title = incidents_db.check_title(new_red_flag.title)
     
     if title and title != 'False':
         return jsonify({"status":400, "error":"Incident already exists"}), 400
@@ -67,7 +67,7 @@ def postredflag(type):
     if thisredflag['message'] != 'successfully validated':
         return jsonify({"status":400, "error":thisredflag['message']}), 400
 
-    regflagdb.register_flag(**serialize(new_red_flag))
+    incidents_db.register_flag(**serialize(new_red_flag))
 
     return jsonify({"status":201,
                     "data":[{
@@ -111,7 +111,7 @@ def delete(type, id):
                         }), 401
 
     if regflag:
-        regflagdb.delete(id)
+        incidents_db.delete(id)
         return jsonify({"status":200,
                         "data":[{
                         "message":f"{type.rstrip('s')} record has been deleted",
@@ -141,7 +141,6 @@ def patch(type, id, atribute):
     if not regflag:
         return jsonify({"status":404, "error":f"{type.rstrip('s')} not found"}), 404
 
-    print(regflag)
     if atribute == "status" and not current_identity['is_admin']:
         return jsonify({"status":401,
                         "error":"Sorry! only administrators allowed.",
@@ -162,7 +161,7 @@ def patch(type, id, atribute):
     if validited['message'] != 'successfully validated':
         return jsonify({"status":400, "error":validited['message']}), 400
 
-    if regflagdb.update(**regflag) == 'True':
+    if incidents_db.update(**regflag) == 'True':
         return jsonify({"status":200,
                         "data":[{
                         "message":f"Updated {type.rstrip('s')} record's {atribute}",

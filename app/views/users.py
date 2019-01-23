@@ -37,14 +37,12 @@ def postuser():
     result = userdb.register_user(**user)
 
     if result=='False':
-        print('***** in post '+str(result))
         return jsonify({"status":400, "error":"User already exists"}), 400
 
 
 
     return jsonify({"status":201,
                     "data":[{
-                        "token":encode_handler(new_user, str(new_user.id)+str(datetime.datetime.now()), "HS256").decode("utf-8"),
                         "user":userdb.check_id(new_user.id),
                     }]}), 201
 
@@ -121,7 +119,6 @@ def updateuser(id):
 
     result = userdb.update(**user)
 
-    print('***** in update '+str(result))
     if result=='False':
         return jsonify({"status":400, "error":"User update failed"}), 400
 
