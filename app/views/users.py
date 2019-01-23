@@ -15,7 +15,7 @@ users_view = Blueprint('users_view', __name__)
 @users_view.route('/ireporter/api/v2/auth/signup', methods=["POST"])
 def postuser():
 
-    """ signup """
+    """ function to add a user """
     try:
         data = request.get_json()
     except:
@@ -53,6 +53,8 @@ def postuser():
 @jwt_required()
 def getusers():
 
+    """ function to get all users """
+
     if not current_identity['is_admin']:
         return jsonify({"status":401,
                         "data":[{
@@ -70,6 +72,8 @@ def getusers():
 @jwt_required()
 def getauser(id):
 
+    """ function to get a user by id """
+
     if not (current_identity['is_admin'] or (current_identity['userid'] == id)):
         return jsonify({"error":"Sorry! Access denied.",
                         }), 401
@@ -86,7 +90,7 @@ def getauser(id):
 @users_view.route('/ireporter/api/v2/users/<int:id>', methods=["PUT"])
 @jwt_required()
 def updateuser(id):
-    """ signup """
+    """ function to update user data """
 
     if not (current_identity['is_admin'] or (current_identity['userid'] == id)):
         return jsonify({"status":401,

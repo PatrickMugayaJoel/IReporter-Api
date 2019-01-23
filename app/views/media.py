@@ -11,7 +11,7 @@ media = Blueprint('media_view', __name__)
 @media.route('/ireporter/api/v2/red-flags/<int:id>/videos', methods=["POST"])
 def postmedia(id):
 
-    """ add media """
+    """ function that handles add media """
     try:
         data = request.get_json()
     except:
@@ -45,6 +45,8 @@ def postmedia(id):
 @media.route('/ireporter/api/v2/red-flags/<int:id>/<type>', methods=["GET"])
 def getmedia(type, id):
 
+    """ funtion to return a list of media """
+
     type = type.rstrip('s')
 
     if not get_flag_by_id(id):
@@ -65,6 +67,8 @@ def getmedia(type, id):
 @media.route('/ireporter/api/v2/videos/<int:id>', methods=["GET"])
 def getmedia_by_id(id):
 
+    """ function that returns a single image/video by id """
+
     mediaDB = MediaDB()
     result = mediaDB.check_id(id)
 
@@ -79,6 +83,8 @@ def getmedia_by_id(id):
 @media.route('/ireporter/api/v2/videos/<int:id>', methods=["DELETE"])
 @jwt_required()
 def delete_media(id):
+
+    """ function to delete a video/image """
 
     mediaDB = MediaDB()
     medium = mediaDB.check_id(id)

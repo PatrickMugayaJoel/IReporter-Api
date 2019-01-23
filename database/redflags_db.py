@@ -2,7 +2,12 @@
 from database.connection import cursor
 
 class RedflagsDB:
+
+    """ class to handle redflag interactions between application and database """
+
     def __init__(self):
+
+        """ initializing class. Adding redflags table if not exists """
 
         cursor.execute(
             """
@@ -21,6 +26,9 @@ class RedflagsDB:
 
     
     def regflags(self, type):
+
+        """ function returning redflags from database """
+
         try:
             reg_flag = f"SELECT * FROM redflags WHERE type = '{type}';"
             cursor.execute(reg_flag)
@@ -30,6 +38,9 @@ class RedflagsDB:
             return 'False'
     
     def register_flag(self, **kwags):
+
+        """ function to add redflags to the database """
+
         reg_flag = f"""INSERT INTO\
         redflags(flag_id, title, type, status, location, comment, createdby, createdon)\
         VALUES('{kwags["id"]}', '{kwags["title"]}', '{kwags["type"]}', '{kwags["status"]}',\
@@ -43,6 +54,9 @@ class RedflagsDB:
             return 'False'
 
     def check_flag(self, id):
+
+        """ function that returns a redflag from database by it's id """
+
         query = f"SELECT * FROM redflags WHERE flag_id='{id}';"
         print(query)
 
@@ -53,6 +67,9 @@ class RedflagsDB:
             return 'False'
 
     def check_title(self, title):
+
+        """ selecting a redflag from the database by it's title """
+
         query = f"SELECT * FROM redflags WHERE title='{title}';"
         print(query)
 
@@ -63,6 +80,9 @@ class RedflagsDB:
             return 'False'
 
     def delete(self, id):
+
+        """ deleting a redflag from the database """
+
         query = f"delete FROM redflags WHERE flag_id='{id}';"
         print(query)
 
@@ -74,6 +94,9 @@ class RedflagsDB:
 
     
     def update(self, **kwags):
+
+        """ method to update redflag recode in the database """
+
         reg_flag = f"""UPDATE redflags SET title='{kwags["title"]}', type='{kwags["type"]}', status='{kwags["status"]}', location='{kwags["location"]}', comment='{kwags["comment"]}' WHERE flag_id={kwags["id"]};"""
 
         print(reg_flag)
@@ -84,7 +107,7 @@ class RedflagsDB:
             return 'False'
 
     def default_flag(self):
-        """insert a default flag"""
+        """ method inserting a default flag"""
 
         try:
             cursor.execute(

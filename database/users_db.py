@@ -3,7 +3,12 @@ from flask import jsonify
 from database.connection import cursor
 
 class UsersDB:
+
+    """ class to handle user database related activities """
+
     def __init__(self):
+
+        """ initializing class. creating table users if it does not exist """
 
         cursor.execute(
             """
@@ -25,6 +30,8 @@ class UsersDB:
 
     def register_user(self, **kwags):
 
+        """ function to add a user to the data base """
+
         reg_user = f"""INSERT INTO\
         users(userid, firstname, lastname, username, email, password, phonenumber, registered)\
         VALUES('{kwags["id"]}', '{kwags["firstname"]}', '{kwags["lastname"]}', '{kwags["username"]}',\
@@ -39,6 +46,9 @@ class UsersDB:
             return 'False'
     
     def users(self):
+
+        """ function to return users from the database """
+
         try:
             cursor.execute("SELECT * FROM users;")
             return cursor.fetchall()
@@ -46,6 +56,9 @@ class UsersDB:
             return 'False'
 
     def update(self, **kwags):
+
+        """ function to update user data in the database """
+
         query = f"""UPDATE users SET firstname='{kwags["firstname"]}', lastname='{kwags["lastname"]}', username='{kwags["username"]}', email='{kwags["email"]}', password='{kwags["password"]}', phonenumber='{kwags["phonenumber"]}', is_admin={kwags["is_admin"]} WHERE userid={kwags["id"]};"""
 
         print(query)
@@ -56,6 +69,9 @@ class UsersDB:
             return 'False'
     
     def check_id(self, id):
+
+        """ function to select user from databse by id """
+
         query = f"SELECT * FROM users WHERE userId='{id}';"
         print(query)
 
@@ -66,6 +82,9 @@ class UsersDB:
             return 'False'
 
     def login(self, username, password):
+
+        """ function to check if the provided username and pasword exist in the database """
+
         query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}';"
         print(query)
         try:
@@ -75,9 +94,15 @@ class UsersDB:
             return 'False'
 
     def delete_user(self, id):
+
+        """ function to delete a user from the database """
+
         cursor.execute(f"delete FROM users where userId={id};")
 
     def delete_default_users(self):
+
+        """ function to clear all database tables (three tables) """
+
         cursor.execute("delete FROM media;")
         cursor.execute("delete FROM redflags")
         cursor.execute("delete FROM users;")

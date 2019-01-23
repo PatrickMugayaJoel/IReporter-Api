@@ -15,29 +15,30 @@ mediaDB = MediaDB()
 @redflags_view.route('/ireporter/api/v2/<type>', methods=["GET"])
 def getredflags(type):
 
-    """ get red-flags """
+    """ function to get red-flags """
 
     if not (type in ["red-flags","interventions"]):
         return jsonify({"status":"404", "error":"Invalid URL"}), 404
     
     regflags = regflagdb.regflags(type.rstrip('s'))
 
-    if regflags and regflags != 'False':
+    if not (regflags and regflags != 'False'):
+        return jsonify({"status":"404", "error":f"No {type} found"}), 404
 
-        regflags[0]['Video'] = mediaDB.flag_media(**{'type':'video','redflag':regflags[0]['flag_id']})['data']
-        regflags[0]['Image'] = mediaDB.flag_media(**{'type':'image','redflag':regflags[0]['flag_id']})['data']
+    for flag in regflags:
+        flag['Video'] = [item[0] for item in mediaDB.flag_media(**{'type':'video','redflag':flag['flag_id']})['data']]
+        flag['Image'] = [item[0] for item in mediaDB.flag_media(**{'type':'image','redflag':flag['flag_id']})['data']]
 
         return jsonify({"status":200,
                         "data":regflags
                         }), 200
     
-    return jsonify({"status":"404", "error":f"No {type} found"}), 404
 
 @redflags_view.route('/ireporter/api/v2/<type>', methods=["POST"])
 @jwt_required()
 def postredflag(type):
 
-    """ add a red flag """
+    """ function to add a red flag """
 
     if not (type in ["red-flags","interventions"]):
         return jsonify({"status":"404", "error":"Invalid URL"}), 404
@@ -78,6 +79,8 @@ def postredflag(type):
 @redflags_view.route('/ireporter/api/v2/<type>/<int:id>', methods=["GET"])
 def get(type, id):
 
+    """ function to get a single redflag by id """
+
     if not (type in ["red-flags","interventions"]):
         return jsonify({"status":"404", "error":"Invalid URL"}), 404
 
@@ -85,8 +88,8 @@ def get(type, id):
     
     if regflag and regflag != 'False':
 
-        regflag[0]['Video'] = mediaDB.flag_media(**{'type':'video','redflag':regflag[0]['flag_id']})['data']
-        regflag[0]['Image'] = mediaDB.flag_media(**{'type':'image','redflag':regflag[0]['flag_id']})['data']
+        regflag['Video'] = mediaDB.flag_media(**{'type':'video','redflag':regflag[0]['flag_id']})['data']
+        regflag['Image'] = mediaDB.flag_media(**{'type':'image','redflag':regflag[0]['flag_id']})['data']
 
         return jsonify({"status":200,
                         "data":regflag
@@ -97,6 +100,8 @@ def get(type, id):
 @redflags_view.route('/ireporter/api/v2/<type>/<int:id>', methods=["DELETE"])
 @jwt_required()
 def delete(type, id):
+
+    """ function to delete a redflag """
 
     regflag = get_flag_by_id(id)
 
@@ -119,6 +124,8 @@ def delete(type, id):
 @redflags_view.route('/ireporter/api/v2/<type>/<int:id>/<atribute>', methods=["PATCH"])
 @jwt_required()
 def patch(type, id, atribute):
+
+    """ function to update a redflag """
 
     if not (type in ["red-flags","interventions"]):
         return jsonify({"status":"404", "error":"Invalid URL"}), 404

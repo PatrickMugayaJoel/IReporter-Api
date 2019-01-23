@@ -3,7 +3,12 @@ from app.utils.validator import Validator
 
 class Validate_user(Validator):
 
+    """ inherits the validator """
+
     def __init__(self):
+        
+        """ Method declares the schemma aganist which a user is to be validated """
+
         schema = [
             {'key':'firstname', 'type':'string', 'not_null':True},
             {'key':'lastname', 'type':'string', 'not_null':True},
