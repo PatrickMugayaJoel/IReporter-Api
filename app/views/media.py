@@ -21,7 +21,7 @@ def postmedia(id):
         return jsonify({"status":400, "error":"type should be a string"}), 400
 
     if not (data['type'] in ["image","video","comment"]):
-        return jsonify({"status":400, "error":"Valid types are video, image, and comment."}), 400
+        return jsonify({"status":400, "error":"Valid types are video and image."}), 400
 
     if not (data.get('input') and isinstance(data.get('input'), str) and (not data['input'].isspace())):
         return jsonify({"status":400, "error":"Input should be a string"}), 400

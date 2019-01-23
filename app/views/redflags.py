@@ -29,9 +29,9 @@ def getredflags(type):
         flag['Video'] = [item[0] for item in mediaDB.flag_media(**{'type':'video','redflag':flag['flag_id']})['data']]
         flag['Image'] = [item[0] for item in mediaDB.flag_media(**{'type':'image','redflag':flag['flag_id']})['data']]
 
-        return jsonify({"status":200,
-                        "data":regflags
-                        }), 200
+    return jsonify({"status":200,
+                    "data":regflags
+                    }), 200
     
 
 @redflags_view.route('/ireporter/api/v2/<type>', methods=["POST"])
@@ -88,8 +88,8 @@ def get(type, id):
     
     if regflag and regflag != 'False':
 
-        regflag['Video'] = mediaDB.flag_media(**{'type':'video','redflag':regflag[0]['flag_id']})['data']
-        regflag['Image'] = mediaDB.flag_media(**{'type':'image','redflag':regflag[0]['flag_id']})['data']
+        regflag['Video'] = [item[0] for item in mediaDB.flag_media(**{'type':'video','redflag':regflag['flag_id']})['data']]
+        regflag['Image'] = [item[0] for item in mediaDB.flag_media(**{'type':'image','redflag':regflag['flag_id']})['data']]
 
         return jsonify({"status":200,
                         "data":regflag

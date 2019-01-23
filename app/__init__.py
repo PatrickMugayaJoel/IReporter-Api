@@ -55,7 +55,7 @@ def home():
     
     return jsonify({"status":200,
                             "data":[{
-                                "message":"Welcome ti IReporter"
+                                "message":"Welcome to IReporter 3"
                             }]}), 200
 
 
