@@ -9,6 +9,7 @@ try:
     )
     connection.autocommit = True
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    curs = connection.cursor()
 
     print('Connected to the database successfully.')
     print(os.getenv('DB_DATABASE'))

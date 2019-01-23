@@ -20,7 +20,7 @@ def getredflags(type):
     if not (type in ["red-flags","interventions"]):
         return jsonify({"status":"404", "error":"Invalid URL"}), 404
     
-    regflags = regflagdb.regflags(type)
+    regflags = regflagdb.regflags(type.rstrip('s'))
 
     if regflags and regflags != 'False':
 
@@ -31,7 +31,7 @@ def getredflags(type):
                         "data":regflags
                         }), 200
     
-    return jsonify({"status":"404", "error":"No redflags found"}), 404
+    return jsonify({"status":"404", "error":f"No {type} found"}), 404
 
 @redflags_view.route('/ireporter/api/v2/<type>', methods=["POST"])
 @jwt_required()
@@ -58,7 +58,7 @@ def postredflag(type):
     new_red_flag.createdon = datetime.datetime.now().strftime("%Y/%m/%d")
     new_red_flag.createdby = current_identity['userid']
     new_red_flag.status = 'under investigation'
-    new_red_flag.type = type
+    new_red_flag.type = type.rstrip('s')
 
     validate_redflag = Validate_redflag()
     thisredflag = validate_redflag.validate(**serialize(new_red_flag))
@@ -83,7 +83,11 @@ def get(type, id):
 
     regflag = get_flag_by_id(id)
     
-    if regflag:
+    if regflag and regflag != 'False':
+
+        regflag[0]['Video'] = mediaDB.flag_media(**{'type':'video','redflag':regflag[0]['flag_id']})['data']
+        regflag[0]['Image'] = mediaDB.flag_media(**{'type':'image','redflag':regflag[0]['flag_id']})['data']
+
         return jsonify({"status":200,
                         "data":regflag
                         }), 200
@@ -104,7 +108,10 @@ def delete(type, id):
     if regflag:
         regflagdb.delete(id)
         return jsonify({"status":200,
-                        "message":f"Deleted {type.rstrip('s')} Record"
+                        "data":[{
+                        "message":f"{type.rstrip('s')} record has been deleted",
+                        "id": id
+                        }]
                         }), 200
 
     return jsonify({"status":404, "error":f"{type.rstrip('s')} not found"}), 404
@@ -116,7 +123,7 @@ def patch(type, id, atribute):
     if not (type in ["red-flags","interventions"]):
         return jsonify({"status":"404", "error":"Invalid URL"}), 404
 
-    if not (atribute in ["comment","interventions","location","status"]):
+    if not (atribute in ["comment", "location", "status"]):
         return jsonify({"status":"404", "error":"Invalid URL"}), 404
 
     try: data = request.get_json()
@@ -150,5 +157,8 @@ def patch(type, id, atribute):
 
     if regflagdb.update(**regflag) == 'True':
         return jsonify({"status":200,
-                        "message":"Updated red-flag Record"
+                        "data":[{
+                        "message":f"Updated {type.rstrip('s')} record's {atribute}",
+                        "id": id
+                        }]
                         }), 200

@@ -78,7 +78,7 @@ def customized_encode_handler(identity):
     return encode_handler(identity, secret, algorithm)
 
 
-@app.route('/ireporter/api/v2/logout')
+@app.route('/ireporter/api/v2/auth/logout')
 @jwt_required()
 def logout():
 

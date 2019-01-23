@@ -1,5 +1,6 @@
 
 from database.connection import cursor
+from database.connection import curs
 
 class MediaDB:
     def __init__(self):
@@ -41,10 +42,10 @@ class MediaDB:
             return {'status':False, 'message':format(ex)}
 
     def flag_media(self, **kwags):
-        query = f"""SELECT * FROM media WHERE type='{kwags["type"]}' AND redflag='{kwags["redflag"]}';"""
+        query = f"""SELECT resource FROM media WHERE type='{kwags["type"]}' AND redflag='{kwags["redflag"]}';"""
         print(query)
         try:
-            cursor.execute(query)
+            curs.execute(query)
             return {'status':True, 'data':cursor.fetchall()}
         except Exception as ex:
             return {'staus':False, 'message':format(ex)}

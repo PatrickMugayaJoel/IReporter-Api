@@ -22,7 +22,9 @@ class RedflagsDB:
     
     def regflags(self, type):
         try:
-            cursor.execute(f"SELECT * FROM redflags WHERE type = {type};")
+            reg_flag = f"SELECT * FROM redflags WHERE type = '{type}';"
+            cursor.execute(reg_flag)
+            print(reg_flag)
             return cursor.fetchall()
         except:
             return 'False'
