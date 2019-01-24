@@ -1,5 +1,4 @@
 .env
-.testsenv
 .coverage
 .vscode/
 __pycache__/
