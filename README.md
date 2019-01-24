@@ -1,7 +1,7 @@
 # IReporter Api (Challenge 3)
 
 [![Build Status](https://travis-ci.org/PatrickMugayaJoel/Level35-C3.svg?branch=develop)](https://travis-ci.org/PatrickMugayaJoel/Level35-C3)
-[![Coverage Status](https://coveralls.io/repos/github/PatrickMugayaJoel/Level35-C3/badge.svg?branch=develop)](https://coveralls.io/github/PatrickMugayaJoel/Level35-C3?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/PatrickMugayaJoel/Level35-C3/badge.svg)](https://coveralls.io/github/PatrickMugayaJoel/Level35-C3)
 [![Maintainability](https://api.codeclimate.com/v1/badges/960b6e3315c5201d1007/maintainability)](https://codeclimate.com/github/PatrickMugayaJoel/Level35-C3/maintainability)
 
 IReporter is a government system that enables citizens to bring any form of corruption to the notice of appropriate authorities and the general public.
