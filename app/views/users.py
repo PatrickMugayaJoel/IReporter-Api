@@ -2,6 +2,7 @@
 import datetime
 from flask import jsonify, request, Blueprint
 from flask_jwt import JWT, jwt_required, current_identity
+from flasgger.utils import swag_from
 from app.utils.utils import serialize, generate_id, encode_handler
 from app.utils.validate_user import Validate_user
 from app.models.user import User
@@ -13,6 +14,7 @@ userdb.default_users()
 users_view = Blueprint('users_view', __name__)
 
 @users_view.route('/ireporter/api/v2/auth/signup', methods=["POST"])
+@swag_from('../docs/users/signup.yml')
 def postuser():
 
     """ function to add a user """
@@ -49,6 +51,7 @@ def postuser():
 
 @users_view.route('/ireporter/api/v2/users', methods=["GET"])
 @jwt_required()
+@swag_from('../docs/users/getusers.yml')
 def getusers():
 
     """ function to get all users """
@@ -68,6 +71,7 @@ def getusers():
   
 @users_view.route('/ireporter/api/v2/users/<int:id>', methods=["GET"])
 @jwt_required()
+@swag_from('../docs/users/getauser.yml')
 def getauser(id):
 
     """ function to get a user by id """
@@ -87,6 +91,7 @@ def getauser(id):
 
 @users_view.route('/ireporter/api/v2/users/<int:id>', methods=["PUT"])
 @jwt_required()
+@swag_from('../docs/users/updateuser.yml')
 def updateuser(id):
     """ function to update user data """
 

@@ -1,0 +1,44 @@
+Endpoint for a user to create an account
+In this extention, the user should signup.
+---
+operationId: userid
+tags:
+  - users
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        properties:
+          firstname:
+            type: string
+            example: joel
+          lastname:
+            type: string
+            example: patrick
+          username:
+            type: string
+            example: admin
+          email:
+            type: string
+            example: joel@patrick.com
+          phonenumber:
+            type: integer
+            example: 706084841
+          password:
+            type: string
+            example: admin
+        required:
+          - username
+          - password
+          - email
+          - firstname
+          - lastname
+          - phonenumber
+responses:
+  '201':
+    description: Succesfully created account
+  404:
+    description: Requested object not found
+  400:
+    description: Wrong user input or user already exists

@@ -1,0 +1,21 @@
+Endpoint for a user to request all redflags/interventions
+In this extention, the user is not required to login or have an account.
+---
+operationId: getflagsid
+tags:
+  - Redflags and Interventions
+parameters:
+  - name: type
+    in: path
+    required: true
+    example: red-flags
+    description: The accepted inputs are *'red-flags'* and *'interventions'*
+    schema:
+      type: string
+responses:
+  200:
+    description: Succesfully retrieved Redflags/interventions
+  404:
+    description: Requested object not found
+  400:
+    description: Wrong user input

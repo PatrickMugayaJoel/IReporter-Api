@@ -1,8 +1,8 @@
-{
+doc_temp={
     "openapi": "3.0.0",
     "info": {
-      "title": "Andela levelup",
-      "description": "API for my andela levelup application",
+      "title": "IReporter",
+      "description": "API for ireporter application",
       "contact": {
         "email": "josean@andela.com",
         "url": "https://www.joelpatrick.com"
@@ -11,7 +11,7 @@
       "version": "v1"
     },
     "paths":{
-      "/api/v1/login":{
+      "/ireporter/api/v2/auth/login":{
         "post": {
             "operationId": "login",
             "tags": [
@@ -25,11 +25,11 @@
                     "properties": {
                       "username": {
                         "type": "string",
-                        "example": "Hero"
+                        "example": "admin"
                       },
                       "password": {
                         "type": "string",
-                        "example": "1234567j"
+                        "example": "admin"
                       }
                     },
                     "required": [
