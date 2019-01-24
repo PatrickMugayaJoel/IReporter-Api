@@ -15,15 +15,6 @@ def serialize(objt):
             listtwo.append(serialize(item))
         return listtwo
     else: return objt.__dict__
- 
-def generate_id():
-
-    """ Method creates ids """
-
-    now = time.time()
-    localtime = time.localtime(now)
-    milliseconds = '%03d' % int((now - int(now)) * 1000)
-    return int(time.strftime('%Y%m%d%H%M%S', localtime) + milliseconds)
 
 def get_flag_by_id(id):
 
