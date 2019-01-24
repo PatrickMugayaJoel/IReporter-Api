@@ -46,6 +46,9 @@ class Validator:
             if isinstance(item.get('min_length'), int):
                 self.__is_min_length(item)
 
+            if isinstance(item.get('max_length'), int):
+                self.__is_max_length(item)
+
     def __add_value_to_item(self, item):
         """ adding user input to a schema item """
 
@@ -86,7 +89,15 @@ class Validator:
         item['value'] = str(item['value'])
 
         if not len(item['value'])>(item['min_length']-1):
-            self.__invalid_data_messages.append(item['key']+" must be at least "+str(item['min_length'])+" characters long.")
+            self.__invalid_data_messages.append(item['key']+" must be at-least "+str(item['min_length'])+" characters.")
+
+    def __is_max_length(self, item):
+        """ Validating if not excides max length """
+
+        item['value'] = str(item['value'])
+
+        if len(item['value'])>(item['max_length']+1):
+            self.__invalid_data_messages.append(item['key']+" must be at-most "+str(item['max_length'])+" characters.")
 
     def __is_not_null(self, item):
         """ Validating if not null """
