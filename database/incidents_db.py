@@ -12,7 +12,7 @@ class IncidentsDB:
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS incidents (
-                flag_id BIGINT NOT NULL PRIMARY KEY,
+                flag_id SERIAL PRIMARY KEY,
                 title VARCHAR(30) NOT NULL UNIQUE,
                 type VARCHAR(12) NOT NULL,
                 status VARCHAR(20) NULL,
@@ -41,15 +41,16 @@ class IncidentsDB:
         """ function to add incidents to the database """
 
         reg_flag = f"""INSERT INTO\
-        incidents(flag_id, title, type, status, location, comment, createdby, createdon)\
-        VALUES('{kwags["id"]}', '{kwags["title"]}', '{kwags["type"]}', '{kwags["status"]}',\
-        '{kwags["location"]}', '{kwags["comment"]}', '{kwags["createdby"]}', '{kwags["createdon"]}');"""
+        incidents(title, type, status, location, comment, createdby, createdon)\
+        VALUES('{kwags["title"]}', '{kwags["type"]}', '{kwags["status"]}',\
+        '{kwags["location"]}', '{kwags["comment"]}', '{kwags["createdby"]}', '{kwags["createdon"]}') RETURNING flag_id;"""
 
         try:
             cursor.execute(reg_flag)
-            return 'True'
-        except:
-            return 'False'
+            flag=cursor.fetchone()
+            return {'status':True, 'data':flag}
+        except Exception as e:
+            return {'status':False, 'error':str(e)}
 
     def check_flag(self, id):
 
@@ -106,8 +107,8 @@ class IncidentsDB:
         try:
             cursor.execute(
                 """
-                INSERT INTO incidents(flag_id, title, type, status, location, comment, createdby)\
-                VALUES(10, 'redflag', 'redflag', 'initial', '0.232, 3.211', 'comment', 10);
+                INSERT INTO incidents(title, type, status, location, comment, createdby)\
+                VALUES('redflag', 'redflag', 'initial', '0.232, 3.211', 'comment', 1);
                 """
             )
             return {"msg":"*** Created default flag ***"}

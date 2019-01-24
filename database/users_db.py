@@ -13,7 +13,7 @@ class UsersDB:
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS users (
-                userid BIGINT NOT NULL PRIMARY KEY,
+                userid SERIAL PRIMARY KEY,
                 username VARCHAR(15) NOT NULL UNIQUE,
                 firstname VARCHAR(10) NULL,
                 lastname VARCHAR(10) NULL,
@@ -32,16 +32,15 @@ class UsersDB:
 
         """ function to add a user to the data base """
 
-        reg_user = f"""INSERT INTO\
-        users(userid, firstname, lastname, username, email, password, phonenumber, registered)\
-        VALUES('{kwags["id"]}', '{kwags["firstname"]}', '{kwags["lastname"]}', '{kwags["username"]}',\
-        '{kwags["email"]}', '{kwags["password"]}', '{kwags["phonenumber"]}', '{kwags["registered"]}');"""
+        reg_user = f"""INSERT INTO users(firstname, lastname, username, email, password, phonenumber, registered)
+                        VALUES('{kwags["firstname"]}', '{kwags["lastname"]}', '{kwags["username"]}', '{kwags["email"]}', '{kwags["password"]}', '{kwags["phonenumber"]}', '{kwags["registered"]}') RETURNING userid;"""
 
         try:
             cursor.execute(reg_user)
-            return 'True'
-        except:
-            return 'False'
+            reg_user=cursor.fetchone()
+            return {'status':True, 'data':reg_user}
+        except Exception as e:
+            return {'status':False, 'error':str(e)}
     
     def users(self):
 
@@ -98,9 +97,9 @@ class UsersDB:
 
         """ function to clear all database tables (three tables) """
 
-        cursor.execute("delete FROM media;")
-        cursor.execute("delete FROM incidents")
-        cursor.execute("delete FROM users;")
+        cursor.execute("drop table if exists media;")
+        cursor.execute("drop table if exists incidents")
+        cursor.execute("drop table if exists users;")
 
     def default_users(self):
         """insert a default user"""
@@ -108,9 +107,9 @@ class UsersDB:
         try:
             cursor.execute(
                 """
-                INSERT INTO users(userid, firstname, lastname, username, email, password, phonenumber, is_admin)\
-                VALUES(10, 'admin', 'admin', 'admin', 'admin@admin.go', 'admin', 123456, True ),\
-                (20, 'user', 'user', 'user', 'user@user.go', 'user', 123456, False );
+                INSERT INTO users(firstname, lastname, username, email, password, phonenumber, is_admin)\
+                VALUES('admin', 'admin', 'admin', 'admin@admin.go', 'admin', 123456, True ),\
+                ('user', 'user', 'user', 'user@user.go', 'user', 123456, False );
                 """
             )
             return {"msg":"*** Created default user ***"}
