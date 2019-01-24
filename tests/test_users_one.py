@@ -8,11 +8,12 @@ class TestUsersOne(unittest.TestCase):
 
     def setUp(self):
         self.test_client = app.test_client()
+        self.db = UsersDB()
+        self.db.default_users()
     
     def tearDown(self):
         self.test_client.delete
-        db = UsersDB()
-        db.delete_default_users()
+        self.db.delete_default_users()
 
 
     def test_user_register_with_no_data(self):
@@ -29,10 +30,10 @@ class TestUsersOne(unittest.TestCase):
     def test_user_register_with_data(self):
 
         user = {
-                    "firstname":"test2",
-                    "lastname":"test2",
-                    "username":"test2",
-                    "email":"j@jj.cm",
+                    "firstname":"test3",
+                    "lastname":"test3",
+                    "username":"test3",
+                    "email":"jj@jj.cm",
                     "phonenumber":706084841,
                     "password":"test2"
                 }
@@ -45,7 +46,7 @@ class TestUsersOne(unittest.TestCase):
         responsedata = json.loads(response.data.decode())
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(responsedata['data'][0]['user']['firstname'], 'test2')
+        self.assertEqual(responsedata['data'][0]['user']['firstname'], 'test3')
 
     def test_existing_user_register(self):
 

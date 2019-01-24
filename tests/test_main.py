@@ -2,6 +2,7 @@ import unittest
 from app import app
 import json
 from database.users_db import UsersDB
+from database.incidents_db import IncidentsDB
 
 class TestMain(unittest.TestCase):
 
@@ -9,6 +10,10 @@ class TestMain(unittest.TestCase):
         self.test_client = app.test_client()
         self.db = UsersDB()
         self.db.default_users()
+
+        incidents_db = IncidentsDB()
+        incidents_db.default_flag()
+
         self.red_flag = {
                     "title":"trest",
                     "type":"redflag",

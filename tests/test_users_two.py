@@ -49,7 +49,7 @@ class TestUsersTwo(unittest.TestCase):
     def test_get_a_user(self):
 
         response  = self.test_client.get(
-            'ireporter/api/v2/users/10',
+            'ireporter/api/v2/users/1',
             headers=self.headers
         )
         responsedata = json.loads(response.data.decode())
@@ -63,7 +63,7 @@ class TestUsersTwo(unittest.TestCase):
         token = json.loads(response.data).get('data')[0]['token']
 
         response  = self.test_client.get(
-            'ireporter/api/v2/users/10',
+            'ireporter/api/v2/users/1',
             headers={"Content-Type": "application/json", 'Authorization': f'Bearer {token}'}
         )
         responsedata = json.loads(response.data.decode())
@@ -94,7 +94,7 @@ class TestUsersTwo(unittest.TestCase):
                 }
 
         response = self.test_client.put(
-            f'ireporter/api/v2/users/20',
+            f'ireporter/api/v2/users/2',
             headers=self.headers,
             data=json.dumps(user)
         )
@@ -106,7 +106,7 @@ class TestUsersTwo(unittest.TestCase):
     def test_user_update_no_data(self):
 
         response = self.test_client.put(
-            f'ireporter/api/v2/users/20',
+            f'ireporter/api/v2/users/2',
             headers=self.headers
         )
         responsedata = json.loads(response.data.decode())
@@ -129,7 +129,7 @@ class TestUsersTwo(unittest.TestCase):
         token = json.loads(response.data).get('data')[0]['token']
 
         response = self.test_client.put(
-            f'ireporter/api/v2/users/10',
+            f'ireporter/api/v2/users/1',
             headers={"Content-Type": "application/json", 'Authorization': f'Bearer {token}'},
             data=json.dumps(user)
         )
@@ -171,7 +171,7 @@ class TestUsersTwo(unittest.TestCase):
                 }
 
         response = self.test_client.put(
-            f'ireporter/api/v2/users/20',
+            f'ireporter/api/v2/users/2',
             headers=self.headers,
             data=json.dumps(user)
         )
@@ -191,7 +191,7 @@ class TestUsersTwo(unittest.TestCase):
                 }
 
         response = self.test_client.put(
-            f'ireporter/api/v2/users/20',
+            f'ireporter/api/v2/users/2',
             headers=self.headers,
             data=json.dumps(user)
         )
