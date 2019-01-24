@@ -32,10 +32,10 @@ def postuser():
     user = serialize(new_user)
 
     validate_user = Validate_user()
-    thisuser = validate_user.validate(**user)
+    theuser = validate_user.validate(**user)
 
-    if not thisuser['message'] == 'successfully validated': 
-        return jsonify({"status": 400, "error": thisuser['message']}), 400
+    if not theuser['message'] == 'successfully validated': 
+        return jsonify({"error": theuser['message'], "status": 400}), 400
 
     result = userdb.register_user(**user)
 
@@ -102,17 +102,16 @@ def updateuser(id):
                             "message": "Sorry! Access denied.",
                         }]}), 401
 
-    try: 
-        data = request.get_json()
+    try: requestdata = request.get_json()
     except Exception: 
-        return jsonify({"status": 400, "error": "No data posted"}), 400
+        return jsonify({"error": "No data posted", "status": 400}), 400
 
     user = userdb.check_id(id)
     if not user or user == 'False': 
         return jsonify({"status": 404, "error": "User not found"}), 404
 
-    for key in data: 
-        user[key] = data[key]
+    for key in requestdata: 
+        user[key] = requestdata[key]
 
     user['id'] = user['userid']
     user['registered'] = 'date'

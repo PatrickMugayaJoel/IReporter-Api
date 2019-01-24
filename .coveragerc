@@ -10,7 +10,5 @@ omit =
     */usr/lib/python3/*
     */__init__.py
     tests/*
-    */models/*
-    */utils/*
     */site-packages/*
-    */database/*
+    */docs/*

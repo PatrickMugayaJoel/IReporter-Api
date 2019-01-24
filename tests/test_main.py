@@ -331,3 +331,27 @@ class TestMain(unittest.TestCase):
 
         self.assertEqual(respdata2['status'], 401)
         self.assertEqual(respdata2['error'], 'Sorry! only administrators allowed.')
+
+    def test_put_redflag_wrong_status(self):
+
+        response = self.test_client.post(
+            'ireporter/api/v2/red-flags',
+            content_type='application/json',
+            headers=self.headers,
+            data=json.dumps(self.red_flag)
+        )
+        respdata = json.loads(response.data.decode())
+
+        red_flag2 = {
+                    "status":"rejectedd"
+                    }
+
+        response  = self.test_client.patch(
+            f'ireporter/api/v2/red-flags/{respdata["data"][0]["id"]}/status',
+            headers=self.headers,
+            data=json.dumps(red_flag2)
+        )
+        respdata2 = json.loads(response.data.decode())
+
+        self.assertEqual(respdata2['status'], 400)
+        self.assertEqual(respdata2['error'], 'Invalid status')

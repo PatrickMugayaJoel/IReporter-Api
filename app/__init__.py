@@ -33,7 +33,8 @@ def authenticate(username, password):
             user=User(**users)
             user.id = users['userid']
             user.isAdmin = users['is_admin']
-            app.config['JWT_SECRET_KEY'] = str(users['userid'])+str(datetime.now())
+            tym = str(datetime.now())
+            app.config['JWT_SECRET_KEY'] = str(user.id)+tym
             return user
 
 def identity(payload):
