@@ -70,7 +70,7 @@ def getusers():
                     }), 200
 
   
-@users_view.route('/ireporter/api/v2/users/<int: id>', methods=["GET"])
+@users_view.route('/ireporter/api/v2/users/<int:id>', methods=["GET"])
 @jwt_required()
 @swag_from('../docs/users/getauser.yml')
 def getauser(id): 
@@ -90,7 +90,7 @@ def getauser(id):
 
     return jsonify({"status": 404, "error": "User not found"}), 404
 
-@users_view.route('/ireporter/api/v2/users/<int: id>', methods=["PUT"])
+@users_view.route('/ireporter/api/v2/users/<int:id>', methods=["PUT"])
 @jwt_required()
 @swag_from('../docs/users/updateuser.yml')
 def updateuser(id): 

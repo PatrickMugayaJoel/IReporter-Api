@@ -14,7 +14,6 @@ from app.views.media import media
 from app.docs.template import doc_temp
 
 
-
 db = UsersDB()
 app = Flask(__name__)
 
