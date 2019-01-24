@@ -32,7 +32,7 @@ Clone this github repository:  `$ https://github.com/PatrickMugayaJoel/Andela-35
 
 * Install python 3.7
 * Clone [this repository](https://github.com/PatrickMugayaJoel/Andela-35/tree/develop) to your local computer.
-* Setup a virtual enviroment and activate it
+* Setup a virtual enviroment and activate i
 * Install requirements
 * Execute the 'run.py' file in the root directory.
 
