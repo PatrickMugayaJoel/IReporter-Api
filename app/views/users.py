@@ -3,7 +3,7 @@ import datetime
 from flask import jsonify, request, Blueprint
 from flask_jwt import JWT, jwt_required, current_identity
 from flasgger.utils import swag_from
-from app.utils.utils import serialize, generate_id, encode_handler
+from app.utils.utils import serialize, encode_handler
 from app.utils.validate_user import Validate_user
 from app.models.user import User
 from database.users_db import UsersDB
@@ -25,7 +25,6 @@ def postuser():
         return jsonify({"status": 400, "error": "No data posted"}), 400
 
     new_user = User(**data)
-    new_user.id = generate_id()
     new_user.registered = datetime.datetime.now().strftime("%Y/%m/%d")
     new_user.is_admin = False
 
@@ -39,14 +38,12 @@ def postuser():
 
     result = userdb.register_user(**user)
 
-    if result=='False': 
+    if not result['status']:
         return jsonify({"status": 400, "error": "User already exists"}), 400
-
-
 
     return jsonify({"status": 201,
                     "data": [{
-                        "user": userdb.check_id(new_user.id),
+                        "user": userdb.check_id(result['data']['userid']),
                     }]}), 201
 
 
