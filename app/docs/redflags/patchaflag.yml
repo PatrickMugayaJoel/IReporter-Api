@@ -1,0 +1,39 @@
+Endpoint for a user to update a redflag or intervention
+In this extention, the user is required to be logged in.
+---
+operationId: getflagsid
+tags:
+  - Redflags and Interventions
+parameters:
+  - name: type
+    in: path
+    required: true
+    example: red-flags
+    description: The accepted types are *'red-flags'* and *'interventions'*
+    schema:
+      type: string
+  - name: id
+    in: path
+    required: true
+    example: 1
+    description: This is an id of the redflag or intervention you intend to update
+    schema:
+      type: integer
+  - name: attribute
+    in: path
+    required: true
+    example: comment
+    description: The accepted attributes are *'comment'*, *'location'* and *'status'*
+    schema:
+      type: string
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Succesfully saved Redflag/intervention
+  404:
+    description: Requested object not found
+  401:
+    description: You do not have the required permissions or you are not logged-in
+  400:
+    description: Wrong user input

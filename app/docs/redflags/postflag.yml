@@ -1,0 +1,24 @@
+Endpoint for a user to add a redflag or intervention
+In this extention, the user is required to be logged in.
+---
+operationId: getflagsid
+tags:
+  - Redflags and Interventions
+parameters:
+  - name: type
+    in: path
+    required: true
+    example: red-flags
+    schema:
+      type: string
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Succesfully saved Redflag/intervention
+  404:
+    description: Requested object not found
+  401:
+    description: You are not logged-in
+  400:
+    description: Wrong user input

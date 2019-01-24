@@ -2,17 +2,23 @@
 from datetime import timedelta, datetime
 from flask import jsonify
 from flask import Flask
+from flasgger import Swagger
 from flask_jwt import JWT, jwt_required, current_identity
+import json
 from app.utils.utils import encode_handler
 from app.models.user import User
 from database.users_db import UsersDB
 from app.views.users import users_view
 from app.views.redflags import redflags_view
 from app.views.media import media
+from app.docs.template import doc_temp
+
 
 
 db = UsersDB()
 app = Flask(__name__)
+
+swagger = Swagger(app, template=doc_temp)
 
 app.config['JWT_SECRET_KEY'] = 'joel@Da4!'
 app.config['JWT_AUTH_URL_RULE'] = '/ireporter/api/v2/auth/login'
@@ -28,7 +34,6 @@ def authenticate(username, password):
             user=User(**users)
             user.id = users['userid']
             user.isAdmin = users['is_admin']
-            print(users)
             app.config['JWT_SECRET_KEY'] = str(users['userid'])+str(datetime.now())
             return user
 

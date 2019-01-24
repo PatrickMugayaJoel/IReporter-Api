@@ -33,7 +33,6 @@ def postmedia(id):
 
     mediaDB = MediaDB()
     result = mediaDB.add(**data)
-    print(result)
 
     return jsonify({"status":201,
                     "data":[{
@@ -54,7 +53,6 @@ def getmedia(type, id):
 
     mediaDB = MediaDB()
     result = mediaDB.flag_media(**{'type':type,'redflag':id})
-    print(type+'*****'+str(result))
     
     if not result['data']:
         return jsonify({"status":200, "message":"No data to display."})

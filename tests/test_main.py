@@ -2,13 +2,11 @@ import unittest
 from app import app
 import json
 from database.users_db import UsersDB
-from database.redflags_db import RedflagsDB
 
 class TestMain(unittest.TestCase):
 
     def setUp(self):
         self.test_client = app.test_client()
-        #self.flags_db = RedflagsDB()
         self.db = UsersDB()
         self.db.default_users()
         self.red_flag = {

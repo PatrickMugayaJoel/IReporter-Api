@@ -1,0 +1,34 @@
+Endpoint for a user to edit user information
+In this extention, the user must be the editing his information.
+---
+operationId: userid
+tags:
+  - users
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        properties:
+          is_admin:
+            type: boolean
+            example: false
+parameters:
+  - name: id
+    in: path
+    required: true
+    example: 1
+    description: This is an id of the user you intend update
+    schema:
+      type: integer
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Succesfully updated User
+  404:
+    description: Requested object not found
+  401:
+    description: You do not have the required permissions or you are not logged-in
+  400:
+    description: Wrong user input

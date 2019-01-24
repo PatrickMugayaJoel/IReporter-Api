@@ -16,7 +16,7 @@ class MediaDB:
                 id SERIAL PRIMARY KEY,
                 type VARCHAR(8) NOT NULL,
                 resource TEXT NOT NULL,
-                redflag BIGINT NOT NULL REFERENCES redflags(flag_id),
+                redflag BIGINT NOT NULL REFERENCES incidents(flag_id),
                 created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """
@@ -30,8 +30,6 @@ class MediaDB:
         medium = f"""INSERT INTO media(type, resource, redflag)\
         VALUES('{kwags["type"]}', '{kwags["input"]}', '{kwags["redflag"]}') RETURNING id;"""
 
-        print(medium)
-
         try:
             cursor.execute(medium)
             return {'status':True, 'data':cursor.fetchone()}
@@ -43,7 +41,6 @@ class MediaDB:
         """ method to update data in the media table """
 
         query = f"""UPDATE media SET resource='{kwags["comment"]}' WHERE id={kwags["id"]} RETURNING id;"""
-        print(query)
         try:
             cursor.execute(query)
             return {'status':True, 'data':cursor.fetchone()}
@@ -55,7 +52,6 @@ class MediaDB:
         """ method to select data from media table """
 
         query = f"""SELECT resource FROM media WHERE type='{kwags["type"]}' AND redflag='{kwags["redflag"]}';"""
-        print(query)
         try:
             curs.execute(query)
             result = curs.fetchall()
@@ -68,14 +64,11 @@ class MediaDB:
         """ method to select data from media table by id """
 
         query = f"SELECT * FROM media WHERE id='{id}';"
-        print(query)
 
         try:
             cursor.execute(query)
-            print("******** in query passed")
             return {'status':True, 'data':cursor.fetchone()}
         except Exception as ex:
-            print("******** in query failed")
             return {'status':False, 'message':format(ex)}
 
     def delete(self, id):

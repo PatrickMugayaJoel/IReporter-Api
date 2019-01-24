@@ -2,6 +2,7 @@
 import datetime
 from flask import jsonify, request, Blueprint
 from flask_jwt import JWT, jwt_required, current_identity
+from flasgger.utils import swag_from
 from app.utils.utils import serialize, generate_id, encode_handler
 from app.utils.validate_user import Validate_user
 from app.models.user import User
@@ -13,6 +14,7 @@ userdb.default_users()
 users_view = Blueprint('users_view', __name__)
 
 @users_view.route('/ireporter/api/v2/auth/signup', methods=["POST"])
+@swag_from('../docs/users/signup.yml')
 def postuser():
 
     """ function to add a user """
@@ -37,20 +39,19 @@ def postuser():
     result = userdb.register_user(**user)
 
     if result=='False':
-        print('***** in post '+str(result))
         return jsonify({"status":400, "error":"User already exists"}), 400
 
 
 
     return jsonify({"status":201,
                     "data":[{
-                        "token":encode_handler(new_user, str(new_user.id)+str(datetime.datetime.now()), "HS256").decode("utf-8"),
                         "user":userdb.check_id(new_user.id),
                     }]}), 201
 
 
 @users_view.route('/ireporter/api/v2/users', methods=["GET"])
 @jwt_required()
+@swag_from('../docs/users/getusers.yml')
 def getusers():
 
     """ function to get all users """
@@ -70,6 +71,7 @@ def getusers():
   
 @users_view.route('/ireporter/api/v2/users/<int:id>', methods=["GET"])
 @jwt_required()
+@swag_from('../docs/users/getauser.yml')
 def getauser(id):
 
     """ function to get a user by id """
@@ -89,6 +91,7 @@ def getauser(id):
 
 @users_view.route('/ireporter/api/v2/users/<int:id>', methods=["PUT"])
 @jwt_required()
+@swag_from('../docs/users/updateuser.yml')
 def updateuser(id):
     """ function to update user data """
 
@@ -121,7 +124,6 @@ def updateuser(id):
 
     result = userdb.update(**user)
 
-    print('***** in update '+str(result))
     if result=='False':
         return jsonify({"status":400, "error":"User update failed"}), 400
 

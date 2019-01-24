@@ -1,0 +1,17 @@
+Endpoint for a user to get users
+In this extention, the user must be logged in as an administrator.
+---
+operationId: userid
+tags:
+  - users
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Succesfully retrieved Users
+  404:
+    description: Requested object not found
+  401:
+    description: You do not have the required permissions or you are not logged-in
+  400:
+    description: Wrong user input
