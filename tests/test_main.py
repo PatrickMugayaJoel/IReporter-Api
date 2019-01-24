@@ -319,7 +319,7 @@ class TestMain(unittest.TestCase):
         respdata = json.loads(response.data.decode())
 
         red_flag2 = {
-                    "status":"This is it"
+                    "status":"rejected"
                     }
 
         response  = self.test_client.patch(

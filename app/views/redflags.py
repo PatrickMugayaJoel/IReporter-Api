@@ -61,7 +61,7 @@ def postredflag(type):
     new_red_flag.id = generate_id()
     new_red_flag.createdon = datetime.datetime.now().strftime("%Y/%m/%d")
     new_red_flag.createdby = current_identity['userid']
-    new_red_flag.status = 'under investigation'
+    new_red_flag.status = 'pending'
     new_red_flag.type = type.rstrip('s')
 
     validate_redflag = Validate_redflag()
@@ -141,6 +141,9 @@ def patch(type, id, attribute):
 
     try: data = request.get_json()
     except: return jsonify({"status":400, "error":"No data was posted"}), 400
+
+    if attribute == "status" and not (data.get('status') in ['under investigation', 'rejected', 'resolved']):
+        return jsonify({"status":400, "error":"Invalid status"}), 400
 
     regflag = get_flag_by_id(id)
 
