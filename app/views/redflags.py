@@ -3,7 +3,7 @@ import datetime
 from flask import jsonify, request, Blueprint
 from flask_jwt import jwt_required, current_identity
 from flasgger.utils import swag_from
-from app.utils.utils import serialize, generate_id, get_flag_by_id
+from app.utils.utils import serialize, get_flag_by_id
 from app.utils.validate_redflag import Validate_redflag
 from app.models.redflag import Redflag
 from database.incidents_db import IncidentsDB
@@ -28,8 +28,8 @@ def getredflags(type):
         return jsonify({"status":"404", "error":f"No {type} found"}), 404
 
     for flag in regflags:
-        flag['Video'] = [item[0] for item in mediaDB.flag_media(**{'type':'video','redflag':flag['flag_id']})['data']]
-        flag['Image'] = [item[0] for item in mediaDB.flag_media(**{'type':'image','redflag':flag['flag_id']})['data']]
+        flag['Video'] = [item[0] for item in mediaDB.flag_media(**{'type':'video','redflag':flag['flag_id']}).get('data',[])]
+        flag['Image'] = [item[0] for item in mediaDB.flag_media(**{'type':'image','redflag':flag['flag_id']}).get('data',[])]
 
     return jsonify({"status":200,
                     "data":regflags
@@ -57,8 +57,7 @@ def postredflag(type):
     
     if title and title != 'False':
         return jsonify({"status":400, "error":"Incident already exists"}), 400
-    
-    new_red_flag.id = generate_id()
+
     new_red_flag.createdon = datetime.datetime.now().strftime("%Y/%m/%d")
     new_red_flag.createdby = current_identity['userid']
     new_red_flag.status = 'pending'
@@ -70,11 +69,15 @@ def postredflag(type):
     if thisredflag['message'] != 'successfully validated':
         return jsonify({"status":400, "error":thisredflag['message']}), 400
 
-    incidents_db.register_flag(**serialize(new_red_flag))
+    result = incidents_db.register_flag(**serialize(new_red_flag))
+
+    if not result['status']:
+        return jsonify({"status":400, "error":result['error']}), 400
+
 
     return jsonify({"status":201,
                     "data":[{
-                        "id":new_red_flag.id,
+                        "id":result['data']['flag_id'],
                         "message":f"Created {type.rstrip('s')} Record"
                         }]
                     }), 201
@@ -92,8 +95,8 @@ def get(type, id):
     
     if regflag and regflag != 'False':
 
-        regflag['Video'] = [item[0] for item in mediaDB.flag_media(**{'type':'video','redflag':regflag['flag_id']})['data']]
-        regflag['Image'] = [item[0] for item in mediaDB.flag_media(**{'type':'image','redflag':regflag['flag_id']})['data']]
+        regflag['Video'] = [item[0] for item in mediaDB.flag_media(**{'type':'video','redflag':regflag['flag_id']}).get('data',[])]
+        regflag['Image'] = [item[0] for item in mediaDB.flag_media(**{'type':'image','redflag':regflag['flag_id']}).get('data',[])]
 
         return jsonify({"status":200,
                         "data":regflag
