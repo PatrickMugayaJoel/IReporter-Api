@@ -9,8 +9,6 @@ from app.models.user import User
 from database.users_db import UsersDB
 
 userdb = UsersDB()
-userdb.delete_default_users()
-userdb = UsersDB()
 userdb.default_users()
 
 users_view = Blueprint('users_view', __name__)
