@@ -17,7 +17,6 @@ before_script:
 
 script:
   - python -m pytest tests --cov
-  # python -m pytest tests --cov-report term-missing --cov
   
 after_success:
   - coveralls
