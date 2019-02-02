@@ -12,10 +12,12 @@ from app.views.users import users_view
 from app.views.redflags import redflags_view
 from app.views.media import media
 from app.docs.template import doc_temp
+from flask_cors import CORS
 
 
 db = UsersDB()
 app = Flask(__name__)
+CORS(app)
 
 swagger = Swagger(app, template=doc_temp)
 
