@@ -41,7 +41,7 @@ def payload_handler(identity):
     """ method builds playload that will be added to the JWT token  """
 
     iat = datetime.utcnow()
-    exp = iat + timedelta(hours=10)
+    exp = iat + timedelta(hours=20)
     nbf = iat + timedelta(seconds=0)
     identity = getattr(identity, 'id') or identity['id']
     return {'exp': exp, 'iat': iat, 'nbf': nbf, 'identity': identity}
