@@ -18,6 +18,7 @@ class IncidentsDB:
                 status VARCHAR(20) NULL,
                 location VARCHAR(20) NOT NULL,
                 comment TEXT NULL,
+                username VARCHAR(15),
                 createdby BIGINT NOT NULL REFERENCES users(userId),
                 createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
@@ -41,9 +42,9 @@ class IncidentsDB:
         """ function to add incidents to the database """
 
         reg_flag = f"""INSERT INTO\
-        incidents(title, type, status, location, comment, createdby, createdon)\
+        incidents(title, type, status, location, comment, createdby, username, createdon)\
         VALUES('{kwags["title"]}', '{kwags["type"]}', '{kwags["status"]}',\
-        '{kwags["location"]}', '{kwags["comment"]}', '{kwags["createdby"]}', '{kwags["createdon"]}') RETURNING flag_id;"""
+        '{kwags["location"]}', '{kwags["comment"]}', '{kwags["createdby"]}', '{kwags["username"]}', '{kwags["createdon"]}') RETURNING flag_id;"""
 
         try:
             cursor.execute(reg_flag)
@@ -107,8 +108,8 @@ class IncidentsDB:
         try:
             cursor.execute(
                 """
-                INSERT INTO incidents(title, type, status, location, comment, createdby)\
-                VALUES('redflag', 'redflag', 'initial', '0.232, 3.211', 'comment', 1);
+                INSERT INTO incidents(title, type, status, location, comment, createdby, username)\
+                VALUES('redflag', 'redflag', 'initial', '0.232, 3.211', 'comment', 1, 'admin');
                 """
             )
             return {"msg":"*** Created default flag ***"}
