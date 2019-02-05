@@ -8,6 +8,8 @@ from app.utils.validate_redflag import Validate_redflag
 from app.models.redflag import Redflag
 from database.incidents_db import IncidentsDB
 from database.media_db import MediaDB
+from database.users_db import UsersDB
+
 
 redflags_view = Blueprint('redflags_view', __name__)
 incidents_db = IncidentsDB()
@@ -58,10 +60,13 @@ def postredflag(type):
     if title and title != 'False':
         return jsonify({"status":400, "error":"Incident already exists"}), 400
 
+    userdb = UsersDB()
+
     new_red_flag.createdon = datetime.datetime.now().strftime("%Y/%m/%d")
     new_red_flag.createdby = current_identity['userid']
     new_red_flag.status = 'pending'
     new_red_flag.type = type.rstrip('s')
+    new_red_flag.username = userdb.check_id(current_identity['userid'])["username"]
 
     validate_redflag = Validate_redflag()
     thisredflag = validate_redflag.validate(**serialize(new_red_flag))
