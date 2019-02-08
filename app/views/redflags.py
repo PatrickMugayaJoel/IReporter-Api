@@ -185,3 +185,42 @@ def patch(type, id, attribute):
                         "id": id
                         }]
                         }), 200
+
+@redflags_view.route('/ireporter/api/v2/incidents/<int:id>', methods=["PUT"])
+@jwt_required()
+def putincident(id):
+
+    """ function to update a redflag """
+
+    try: data = request.get_json()
+    except: return jsonify({"status":400, "error":"No data was posted"}), 400
+
+    regflag = get_flag_by_id(id)
+
+    if not regflag:
+        return jsonify({"status":404, "error":"Incident not found"}), 404
+
+    if not (current_identity['is_admin'] or (current_identity['userid'] == regflag['createdby']) ):
+        return jsonify({"status":401,
+                        "error":"Sorry! you are not authorised to perform this action.",
+                        }), 401
+
+    for key in data: 
+        regflag[key] = data[key]
+
+    regflag['createdon'] = regflag['createdon'].strftime("%Y/%m/%d")
+    regflag['id'] = regflag['flag_id']
+
+    validate_redflag = Validate_redflag()
+    validited = validate_redflag.validate(**regflag)
+
+    if validited['message'] != 'successfully validated':
+        return jsonify({"status":400, "error":validited['message']}), 400
+
+    if incidents_db.update(**regflag) == 'True':
+        return jsonify({"status":200,
+                        "data":[{
+                        "message":f"Successfully Updated Incident record",
+                        "id": id
+                        }]
+                        }), 200
