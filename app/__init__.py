@@ -19,6 +19,9 @@ db = UsersDB()
 app = Flask(__name__)
 CORS(app)
 
+UPLOAD_FOLDER = '../uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 swagger = Swagger(app, template=doc_temp)
 
 app.config['JWT_SECRET_KEY'] = 'joel@Da4!'

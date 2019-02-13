@@ -25,70 +25,70 @@ class TestUsersTwo(unittest.TestCase):
         self.test_client.delete
         self.db.delete_default_users()
 
-    def test_add_media(self):
+    # def test_add_media(self):
 
-        response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/1/images',
-            content_type='application/json',
-            headers=self.headers,
-            data=json.dumps({'type':'image','input':'image'})
-        )
-        responsedata = json.loads(response.data.decode())
+    #     response  = self.test_client.post(
+    #         'ireporter/api/v2/red-flags/1/images',
+    #         content_type='application/json',
+    #         headers=self.headers,
+    #         data=json.dumps({'type':'image','input':'image'})
+    #     )
+    #     responsedata = json.loads(response.data.decode())
 
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(responsedata['data'][0]['message'], 'image successfully added')
+    #     self.assertEqual(response.status_code, 201)
+    #     self.assertEqual(responsedata['data'][0]['message'], 'image successfully added')
 
-    def test_empty_type_media(self):
+    # def test_empty_type_media(self):
 
-        response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/1/images',
-            content_type='application/json',
-            headers=self.headers,
-            data=json.dumps({'type':'','input':'image'})
-        )
-        responsedata = json.loads(response.data.decode())
+    #     response  = self.test_client.post(
+    #         'ireporter/api/v2/red-flags/1/images',
+    #         content_type='application/json',
+    #         headers=self.headers,
+    #         data=json.dumps({'type':'','input':'image'})
+    #     )
+    #     responsedata = json.loads(response.data.decode())
 
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(responsedata['error'], 'type should be a string')
+    #     self.assertEqual(response.status_code, 400)
+    #     self.assertEqual(responsedata['error'], 'type should be a string')
 
-    def test_wrong_type_media(self):
+    # def test_wrong_type_media(self):
 
-        response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/1/images',
-            content_type='application/json',
-            headers=self.headers,
-            data=json.dumps({'type':'joel','input':'image'})
-        )
-        responsedata = json.loads(response.data.decode())
+    #     response  = self.test_client.post(
+    #         'ireporter/api/v2/red-flags/1/images',
+    #         content_type='application/json',
+    #         headers=self.headers,
+    #         data=json.dumps({'type':'joel','input':'image'})
+    #     )
+    #     responsedata = json.loads(response.data.decode())
 
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(responsedata['error'], 'Valid types are video and image.')
+    #     self.assertEqual(response.status_code, 400)
+    #     self.assertEqual(responsedata['error'], 'Valid types are video and image.')
 
-    def test_wrong_input_media(self):
+    # def test_wrong_input_media(self):
 
-        response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/1/images',
-            content_type='application/json',
-            headers=self.headers,
-            data=json.dumps({'type':'image','input':3})
-        )
-        responsedata = json.loads(response.data.decode())
+    #     response  = self.test_client.post(
+    #         'ireporter/api/v2/red-flags/1/images',
+    #         content_type='application/json',
+    #         headers=self.headers,
+    #         data=json.dumps({'type':'image','input':3})
+    #     )
+    #     responsedata = json.loads(response.data.decode())
 
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(responsedata['error'], 'Input should be a string')
+    #     self.assertEqual(response.status_code, 400)
+    #     self.assertEqual(responsedata['error'], 'Input should be a string')
 
-    def test_no_flag_post_media(self):
+    # def test_no_flag_post_media(self):
 
-        response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/100/images',
-            content_type='application/json',
-            headers=self.headers,
-            data=json.dumps({'type':'image','input':'image'})
-        )
-        responsedata = json.loads(response.data.decode())
+    #     response  = self.test_client.post(
+    #         'ireporter/api/v2/red-flags/100/images',
+    #         content_type='application/json',
+    #         headers=self.headers,
+    #         data=json.dumps({'type':'image','input':'image'})
+    #     )
+    #     responsedata = json.loads(response.data.decode())
 
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(responsedata['error'], "Redflag with id '100' not found")
+    #     self.assertEqual(response.status_code, 404)
+    #     self.assertEqual(responsedata['error'], "Redflag with id '100' not found")
 
     def test_no_flag_get_media(self):
 
@@ -100,7 +100,7 @@ class TestUsersTwo(unittest.TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(responsedata['error'], "Redflag with id '100' not found")
-
+    """ 
     def test_get_images(self):
 
         self.test_client.post(
@@ -179,7 +179,7 @@ class TestUsersTwo(unittest.TestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertTrue('Sorry! you are not authorised to perform this action.' in str(responsedata))
-
+    """
     def test_delete_missing_image(self):
 
         response = self.test_client.delete(
