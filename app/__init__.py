@@ -20,12 +20,13 @@ CORS(app)
 
 swagger = Swagger(app, template=doc_temp)
 
-blacklist = set()
+blacklist = []
 
 app.config['JWT_SECRET_KEY'] = 'joel@Da4!'
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
 
+jwt = JWTManager(app)
 
 from app.views import error_handlers
 
@@ -45,7 +46,7 @@ def home():
 
 #login route
 @app.route('/ireporter/api/v2/auth/login', methods=["POST"])
-def login(self):
+def login():
     """login"""
     if not request.is_json:
         return jsonify({"message":"Missing JSON data","status":"failed"}), 400
@@ -76,8 +77,15 @@ def logout():
     """ function to log a user out """
 
     jti = get_raw_jwt()['jti']
-    blacklist.add(jti)
+    blacklist.append(jti)
 
     return jsonify ({
         'message': 'successfully logged out'
     }), 200  
+
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    
+    if decrypted_token['jti'] in blacklist:
+        return True
+    return decrypted_token == 'true'
