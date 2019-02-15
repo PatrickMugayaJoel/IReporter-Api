@@ -1,6 +1,6 @@
 
 from flask import jsonify, request, Blueprint
-from flask_jwt import jwt_required, current_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from database.media_db import MediaDB
 from app.utils.utils import get_flag_by_id
 
@@ -79,7 +79,7 @@ def getmedia_by_id(id):
 
 @media.route('/ireporter/api/v2/images/<int:id>', methods=["DELETE"])
 @media.route('/ireporter/api/v2/videos/<int:id>', methods=["DELETE"])
-@jwt_required()
+@jwt_required
 def delete_media(id):
 
     """ function to delete a video/image """
@@ -94,7 +94,7 @@ def delete_media(id):
 
     regflag = get_flag_by_id(medium.get('redflag'))
 
-    if not (current_identity['is_admin'] or (current_identity['userid'] == regflag['createdby']) ):
+    if not (get_jwt_identity()['is_admin'] or (get_jwt_identity()['userid'] == regflag['createdby']) ):
         return jsonify({"status":401,
                         "data":[{
                             "message":"Sorry! you are not authorised to perform this action.",
