@@ -62,6 +62,9 @@ def getusers():
 
     users = userdb.users()
 
+    for user in users:
+        user['registered'] = user['registered'].strftime("%Y/%m/%d")
+
     return jsonify({"status": 200,
                     "data": users
                     }), 200
@@ -81,6 +84,7 @@ def getauser(id):
     user = userdb.check_id(id)
 
     if user and user != 'False': 
+        user['registered'] = user['registered'].strftime("%Y/%m/%d")
         return jsonify({"status": 200,
                         "data": [user]
                         }), 200
