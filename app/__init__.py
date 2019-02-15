@@ -68,7 +68,7 @@ def login():
                             }]
                     }), 200  
     else:
-        return jsonify({"message": "Wrong username or password","status":401}), 401
+        return jsonify({"error": "Wrong username or password","status":401}), 401
 
 @app.route('/ireporter/api/v2/auth/logout')
 @jwt_required
