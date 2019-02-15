@@ -1,11 +1,10 @@
 
 from datetime import timedelta, datetime
-from flask import jsonify
+from flask import jsonify, request
 from flask import Flask
 from flasgger import Swagger
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import ( JWTManager, jwt_required, create_access_token, get_jwt_identity, get_raw_jwt)
 import json
-from app.utils.utils import encode_handler
 from app.models.user import User
 from database.users_db import UsersDB
 from app.views.users import users_view
@@ -21,33 +20,12 @@ CORS(app)
 
 swagger = Swagger(app, template=doc_temp)
 
+blacklist = set()
+
 app.config['JWT_SECRET_KEY'] = 'joel@Da4!'
-app.config['JWT_AUTH_URL_RULE'] = '/ireporter/api/v2/auth/login'
-app.config['JWT_AUTH_HEADER_PREFIX'] = 'Bearer'
-app.config['JWT_EXPIRATION_DELTA'] = timedelta(hours=10)
+app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
 
-def authenticate(username, password):
-
-    """ function to authenticate a user """
-
-    users = db.login(username, password)
-    if users and users != 'False':
-            user=User(**users)
-            user.id = users['userid']
-            user.isAdmin = users['is_admin']
-            tym = str(datetime.now())
-            app.config['JWT_SECRET_KEY'] = str(user.id)+tym
-            return user
-
-def identity(payload):
-
-    """ function to check identity from JWT token """
-
-    user = db.check_id(payload['identity'])
-    if user and user != 'False':
-            return user
-
-flask_jwt = JWT(app, authenticate, identity)
 
 from app.views import error_handlers
 
@@ -65,48 +43,40 @@ def home():
                                 "message":"Welcome to IReporter 3"
                             }]}), 200
 
+#login route
+@app.route('/ireporter/api/v2/auth/login', methods=["POST"])
+def login(self):
+    """login"""
+    if not request.is_json:
+        return jsonify({"message":"Missing JSON data","status":"failed"}), 400
 
-@flask_jwt.auth_response_handler
-def customized_response_handler(access_token, identity):
+    username = request.json.get('username')
+    password = request.json.get('password')
 
-    """ function to customize responce from JWT login route """
-
-    return jsonify({
-                        'status': 200, 
-                        'data' : [{
-                            'token' : access_token.decode('utf-8'),
-                            'user': identity.__dict__
-                        }]
-                   })
-
-@flask_jwt.jwt_error_handler
-def customized_error_handler(error):
-
-    """ function to be called for any errors in JWT authentication process """
-
-    return jsonify({
-                       'error': error.description,
-                       'status': error.status_code
-                   }), error.status_code
-
-@flask_jwt.jwt_encode_handler
-def customized_encode_handler(identity):
-
-    """ function to customize how JWT encodes a token """
-
-    secret = app.config['JWT_SECRET_KEY']
-    algorithm = app.config['JWT_ALGORITHM']
-
-    return encode_handler(identity, secret, algorithm)
-
+    user = db.login(username, password)
+    
+    if user and user != 'False':
+        userr=User(**user)
+        userr.id = user['userid']
+        userr.isAdmin = user['is_admin']
+        return jsonify({
+                            'status': 200, 
+                            'data' : [{
+                                'token' : create_access_token(identity={'userid':userr.id,'is_admin':userr.isAdmin}, expires_delta=False),
+                                'user': userr.__dict__
+                            }]
+                    }), 200  
+    else:
+        return jsonify({"message": "Wrong username or password","status":401}), 401
 
 @app.route('/ireporter/api/v2/auth/logout')
-@jwt_required()
+@jwt_required
 def logout():
 
     """ function to log a user out """
 
-    app.config['JWT_SECRET_KEY'] = str(current_identity['userid'])+str(datetime.now())
+    jti = get_raw_jwt()['jti']
+    blacklist.add(jti)
 
     return jsonify ({
         'message': 'successfully logged out'
