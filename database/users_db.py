@@ -14,12 +14,12 @@ class UsersDB:
             """
             CREATE TABLE IF NOT EXISTS users (
                 userid SERIAL PRIMARY KEY,
-                username VARCHAR(15) NOT NULL UNIQUE,
-                firstname VARCHAR(10) NULL,
-                lastname VARCHAR(10) NULL,
-                othernames VARCHAR(10) NULL,
-                email VARCHAR(20) NOT NULL UNIQUE,
-                password VARCHAR(100) NOT NULL,
+                username VARCHAR(25) NOT NULL UNIQUE,
+                firstname VARCHAR(25) NULL,
+                lastname VARCHAR(25) NULL,
+                othernames VARCHAR(25) NULL,
+                email VARCHAR(30) NOT NULL UNIQUE,
+                password VARCHAR(25) NOT NULL,
                 is_admin BOOLEAN DEFAULT FALSE,
                 phonenumber INTEGER NOT NULL,
                 registered TIMESTAMP DEFAULT CURRENT_TIMESTAMP
