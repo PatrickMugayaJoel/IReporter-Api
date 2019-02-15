@@ -13,12 +13,12 @@ class IncidentsDB:
             """
             CREATE TABLE IF NOT EXISTS incidents (
                 flag_id SERIAL PRIMARY KEY,
-                title VARCHAR(30) NOT NULL UNIQUE,
+                title VARCHAR(50) NOT NULL UNIQUE,
                 type VARCHAR(12) NOT NULL,
                 status VARCHAR(20) NULL,
-                location VARCHAR(20) NOT NULL,
+                location VARCHAR(40) NOT NULL,
                 comment TEXT NULL,
-                username VARCHAR(15),
+                username VARCHAR(25),
                 createdby BIGINT NOT NULL REFERENCES users(userId),
                 createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
@@ -31,7 +31,8 @@ class IncidentsDB:
         """ function returning incidents from database """
 
         try:
-            reg_flag = f"SELECT * FROM incidents WHERE type = '{type}';"
+            """reg_flag = f"SELECT * FROM incidents WHERE type = '{type}';"""
+            reg_flag = f"SELECT * FROM incidents;"
             cursor.execute(reg_flag)
             return cursor.fetchall()
         except:
