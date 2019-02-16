@@ -1,10 +1,10 @@
 
 import datetime
 from flask import jsonify, request, Blueprint
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flasgger.utils import swag_from
-from app.utils.utils import serialize, encode_handler
 from app.utils.validate_user import Validate_user
+from app.utils.utils import serialize
 from app.models.user import User
 from database.users_db import UsersDB
 
@@ -48,13 +48,13 @@ def postuser():
 
 
 @users_view.route('/ireporter/api/v2/users', methods=["GET"])
-@jwt_required()
+@jwt_required
 @swag_from('../docs/users/getusers.yml')
 def getusers(): 
 
     """ function to get all users """
 
-    if not current_identity['is_admin']: 
+    if not get_jwt_identity()['is_admin']: 
         return jsonify({"status": 401,
                         "data": [{
                             "message": "Sorry! Access restricted to administrators.",
@@ -62,25 +62,29 @@ def getusers():
 
     users = userdb.users()
 
+    for user in users:
+        user['registered'] = user['registered'].strftime("%Y/%m/%d")
+
     return jsonify({"status": 200,
                     "data": users
                     }), 200
 
   
 @users_view.route('/ireporter/api/v2/users/<int:id>', methods=["GET"])
-@jwt_required()
+@jwt_required
 @swag_from('../docs/users/getauser.yml')
 def getauser(id): 
 
     """ function to get a user by id """
 
-    if not (current_identity['is_admin'] or (current_identity['userid'] == id)): 
+    if not (get_jwt_identity()['is_admin'] or (get_jwt_identity()['userid'] == id)): 
         return jsonify({"error": "Sorry! Access denied.",
                         }), 401
 
     user = userdb.check_id(id)
 
     if user and user != 'False': 
+        user['registered'] = user['registered'].strftime("%Y/%m/%d")
         return jsonify({"status": 200,
                         "data": [user]
                         }), 200
@@ -88,12 +92,12 @@ def getauser(id):
     return jsonify({"status": 404, "error": "User not found"}), 404
 
 @users_view.route('/ireporter/api/v2/users/<int:id>', methods=["PUT"])
-@jwt_required()
+@jwt_required
 @swag_from('../docs/users/updateuser.yml')
 def updateuser(id): 
     """ function to update user data """
 
-    if not (current_identity['is_admin'] or (current_identity['userid'] == id)): 
+    if not (get_jwt_identity()['is_admin'] or (get_jwt_identity()['userid'] == id)): 
         return jsonify({"status": 401,
                         "data": [{
                             "message": "Sorry! Access denied.",
