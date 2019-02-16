@@ -1,5 +1,5 @@
 
-from flask import jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint, flash, redirect
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from database.media_db import MediaDB
 from app.utils.utils import get_flag_by_id
@@ -32,9 +32,9 @@ def upload_file(id):
             return redirect(request.url)
         print(file.filename)
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save("https://patrickmugayajoel.github.io/uploads/"+filename)
-            return 'uploaded_file',200
+            filename = 'uploads/'+secure_filename(file.filename)
+            file.save(""+filename)
+            return filename,200
     return "success",200
 
 """ def postmedia(id):
