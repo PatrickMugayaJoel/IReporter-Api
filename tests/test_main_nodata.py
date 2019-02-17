@@ -86,16 +86,6 @@ class TestMainNoData(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertTrue(b'red-flag not found' in response.data)
 
-    def test_create_empty_media(self):
-
-        response  = self.test_client.post(
-            'ireporter/api/v2/red-flags/1/images',
-            content_type='application/json'
-        )
-
-        self.assertEqual(response.status_code, 400)
-        self.assertTrue(b'No data posted' in response.data)
-
     def test_request_method_error(self):
 
         response  = self.test_client.patch(
