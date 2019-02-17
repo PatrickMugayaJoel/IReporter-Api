@@ -1,44 +1,71 @@
 
-from flask import jsonify, request, Blueprint
+import os
+from werkzeug.utils import secure_filename
+from flask import jsonify, request, Blueprint, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from database.media_db import MediaDB
 from app.utils.utils import get_flag_by_id
 
 
+UPLOAD_FOLDER = '../uploads'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+
 media = Blueprint('media_view', __name__)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @media.route('/ireporter/api/v2/red-flags/<int:id>/images', methods=["POST"])
 @media.route('/ireporter/api/v2/red-flags/<int:id>/videos', methods=["POST"])
-def postmedia(id):
+def upload_file(id):
 
-    """ function that handles add media """
-    try:
-        data = request.get_json()
-    except:
-        return jsonify({"status":400, "error":"No data posted"}), 400
-
-    if not (data.get('type') and isinstance(data.get('type'), str) and (not data['type'].isspace())):
-        return jsonify({"status":400, "error":"type should be a string"}), 400
-
-    if not (data['type'] in ["image","video","comment"]):
-        return jsonify({"status":400, "error":"Valid types are video and image."}), 400
-
-    if not (data.get('input') and isinstance(data.get('input'), str) and (not data['input'].isspace())):
-        return jsonify({"status":400, "error":"Input should be a string"}), 400
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        return jsonify({'error':'No file part'}), 400
+    file = request.files['file']
 
     if not get_flag_by_id(id):
         return jsonify({"status":404, "error":f"Redflag with id '{id}' not found"}), 404
 
-    data['redflag'] = id
+    # submit a empty part without filename
+    if file.filename == '':
+        return jsonify({'error':'No selected file'}), 400
 
-    mediaDB = MediaDB()
-    result = mediaDB.add(**data)
+    if file and allowed_file(file.filename):
+        filename = 'uploads/'+secure_filename(file.filename)
 
-    return jsonify({"status":201,
-                    "data":[{
-                        "id":result['data']['id'],
-                        "message":f"{data['type']} successfully added",
-                    }]}), 201
+        try:
+            file.save(filename)
+        except Exception as exc:
+            return str(exc), 400
+
+        formdata = request.form
+
+        if not (formdata.get('type') in ["image","video"]):
+            return jsonify({"status":400, "error":"Valid types are video and image."}), 400
+
+        data ={'type':formdata.get('type'),'input':file.filename, 'redflag': formdata.get('id')}
+
+        mediaDB = MediaDB()
+        result = mediaDB.add(**data)
+
+        return jsonify({"status":201,
+                        "data":[{
+                            "id":result['data']['id'],
+                            "message":f"{data['type']} successfully added",
+                        }]}), 201
+
+def root_dir():
+    return os.path.abspath(os.path.dirname(__file__))
+
+@media.route('/ireporter/api/v2/files/images/<filename>')
+def get_file(filename):
+    try:
+        src = os.path.join(root_dir(), '../../uploads/'+filename)
+        return send_file(src), 200
+    except IOError as exc:
+        return str(exc)
 
 
 @media.route('/ireporter/api/v2/red-flags/<int:id>/<type>', methods=["GET"])
