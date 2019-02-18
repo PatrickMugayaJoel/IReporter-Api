@@ -84,8 +84,10 @@ def getmedia(type, id):
     if not result['data']:
         return jsonify({"status":200, "message":"No data to display."})
     
+    images = [item[0] for item in result['data'] ]
+    
     return jsonify({"status":200,
-                    "data":result
+                    "data":images
                     }), 200
 
 @media.route('/ireporter/api/v2/images/<int:id>', methods=["GET"])
