@@ -62,8 +62,8 @@ def root_dir():
 @media.route('/ireporter/api/v2/files/images/<filename>')
 def get_file(filename):
     try:
-        src = os.path.join(root_dir(), '../../uploads/'+filename)
-        return send_file(src), 200
+        # src = os.path.join(root_dir(), '../../uploads/'+filename)
+        return send_file('uploads/'+filename), 200
     except IOError as exc:
         return str(exc)
 
