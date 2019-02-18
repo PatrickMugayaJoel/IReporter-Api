@@ -63,7 +63,7 @@ def root_dir():
 def get_file(filename):
     try:
         # src = os.path.join(root_dir(), '../../uploads/'+filename)
-        return send_file('uploads/'+filename), 200
+        return send_file('./../../uploads/'+filename), 200
     except IOError as exc:
         return str(exc)
 
