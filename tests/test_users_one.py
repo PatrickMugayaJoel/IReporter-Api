@@ -75,16 +75,6 @@ class TestUsersOne(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(responsedata['error'], 'User already exists')
 
-    def test_get_red_flags(self):
-
-        response  = self.test_client.get(
-            'ireporter/api/v2/red-flags',
-            content_type='application/json'
-        )
-
-        self.assertEqual(response.status_code, 404)
-        self.assertTrue(b'No red-flags found' in response.data)
-
     def test_wronguser_register(self):
         user = {
             "firstname":"",
