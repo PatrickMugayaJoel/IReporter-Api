@@ -85,6 +85,7 @@ class TestMain(unittest.TestCase):
 
         response = self.test_client.get(
             'ireporter/api/v2/red-flags',
+            headers=self.headers,
             content_type='application/json'
         )
         responsedata = json.loads(response.data.decode())
@@ -96,6 +97,7 @@ class TestMain(unittest.TestCase):
 
         response = self.test_client.get(
             'ireporter/api/v2/red-flag',
+            headers=self.headers,
             content_type='application/json'
         )
         responsedata = json.loads(response.data.decode())
