@@ -31,13 +31,23 @@ class IncidentsDB:
         """ function returning incidents from database """
 
         try:
-            """reg_flag = f"SELECT * FROM incidents WHERE type = '{type}';"""
             reg_flag = f"SELECT * FROM incidents;"
             cursor.execute(reg_flag)
             return cursor.fetchall()
         except:
             return 'False'
     
+    def regflagsbyuser(self, userid):
+
+        """ function returning incidents from database """
+
+        try:
+            reg_flag = f"SELECT * FROM incidents WHERE createdby = '{userid}';"
+            cursor.execute(reg_flag)
+            return cursor.fetchall()
+        except:
+            return 'False'
+
     def register_flag(self, **kwags):
 
         """ function to add incidents to the database """
