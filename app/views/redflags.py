@@ -16,6 +16,7 @@ incidents_db = IncidentsDB()
 mediaDB = MediaDB()
 
 @redflags_view.route('/ireporter/api/v2/<type>', methods=["GET"])
+@jwt_required
 @swag_from('../docs/redflags/getflags.yml')
 def getredflags(type):
 
@@ -24,14 +25,17 @@ def getredflags(type):
     if not (type in ["red-flags","interventions"]):
         return jsonify({"status":"404", "error":"Invalid URL"}), 404
     
-    regflags = incidents_db.regflags(type.rstrip('s'))
+    if get_jwt_identity()['is_admin']:
+        regflags = incidents_db.regflags(type.rstrip('s'))
+    else:
+        regflags = incidents_db.regflagsbyuser(get_jwt_identity()['userid'])
 
     if not (regflags and regflags != 'False'):
-        return jsonify({"status":"404", "error":f"No {type} found"}), 404
+        return jsonify({"status":"404", "error":f"No incidents to display"}), 404
 
     for flag in regflags:
-        flag['Video'] = [item[0] for item in mediaDB.flag_media(**{'type':'video','redflag':flag['flag_id']}).get('data',[])]
-        flag['Image'] = [item[0] for item in mediaDB.flag_media(**{'type':'image','redflag':flag['flag_id']}).get('data',[])]
+        # flag['Video'] = [item[0] for item in mediaDB.flag_media(**{'type':'video','redflag':flag['flag_id']}).get('data',[])]
+        # flag['Image'] = [item[0] for item in mediaDB.flag_media(**{'type':'image','redflag':flag['flag_id']}).get('data',[])]
         flag['createdon'] = flag['createdon'].strftime("%Y/%m/%d")
 
     return jsonify({"status":200,
