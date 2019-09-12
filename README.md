@@ -1,4 +1,4 @@
-# IReporter Api (Challenge 3)
+# IReporter Api
 
 [![Build Status](https://travis-ci.org/PatrickMugayaJoel/Level35-C3.svg?branch=develop)](https://travis-ci.org/PatrickMugayaJoel/Level35-C3)
 [![Coverage Status](https://coveralls.io/repos/github/PatrickMugayaJoel/Level35-C3/badge.svg?branch=develop)](https://coveralls.io/github/PatrickMugayaJoel/Level35-C3?branch=develop)
