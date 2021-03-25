@@ -38,7 +38,7 @@ pytest==4.0.0
 pytest-cov==2.6.0
 python-coveralls==2.9.1
 python-dotenv==0.10.1
-PyYAML==3.13
+PyYAML==5.4
 requests==2.20.1
 six==1.11.0
 travis==0.0.3
